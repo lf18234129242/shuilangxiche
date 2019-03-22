@@ -1,40 +1,58 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Home from './views/Home.vue'
+// import Home from './views/Home.vue'
 
 Vue.use(Router)
 
 export default new Router({
   routes: [
-    {
-      path: '/',
-      name: 'home',
-      component: Home
-    },
+    // {
+    //   path: '/',
+    //   name: 'home',
+    //   meta:{index:0},
+    //   component: Home
+    // },
     {
       path: '/login',
       name: 'login',
-      component: () => import(/* webpackChunkName: "about" */ './views/Login.vue')
+      meta:{index:1},
+      component: () => import('./views/Login.vue')
     },
     {
-      path: '/personalCenter',
+      path: '/', //个人中心
       name: 'personalCenter',
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ './views/PersonalCenter.vue'),
-      children: [
-        {
-          path: 'personalInformation',
-          name: 'personalInformation',
-          component: () => import('./views/PersonalInformation.vue')
-        }
-      ]
+      meta:{index:2},
+      component: () => import('./views/PersonalCenter.vue'),
     },
-    // {
-    //   path: '/personalInformation',
-    //   name: 'personalInformation',
-    //   component: () => import('./views/PersonalInformation.vue')
-    // }
+    {
+      path: '/personalInformation',//个人信息
+      name: 'personalInformation',
+      meta:{index:3},
+      component: () => import('./views/PersonalInformation.vue')
+    },
+    {
+      path: '/changeUserPhoneNum',//修改个人信息
+      name: 'changeUserPhoneNum',
+      meta:{index:4},
+      component: () => import('./views/ChangeUserPhoneNum.vue')
+    },
+    {
+      path: '/haveCarsInfo',//拥有车辆信息
+      name: 'haveCarsInfo',
+      meta:{index:3},
+      component: () => import('./views/HaveCarsInfo.vue')
+    },
+    {
+      path: '/addCarsInfo',//添加车辆信息
+      name: 'addCarsInfo',
+      meta:{index:4},
+      component: () => import('./views/AddCarsInfo.vue')
+    },
+    {
+      path: '/orderInfo',//订单信息
+      name: 'orderInfo',
+      meta:{index:3},
+      component: () => import('./views/OrderInfo.vue')
+    },
   ]
 })

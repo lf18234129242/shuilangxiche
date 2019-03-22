@@ -1,17 +1,31 @@
 <template>
   <div class="personalCenter">
-    <header>
-      <div class="avatar">
-        <img :src="avatar" alt="">
-      </div>
-      <p class="user-name">{{userName}}</p>
-      <p class="user-id">ID：{{userId}}</p>
-    </header>
+    <PersonalCenterHeader
+      :avatar="avatar"
+      :userName="userName"
+      :userId="userId"
+    ></PersonalCenterHeader>
     <section>
       <van-cell-group>
-        <van-cell class="personal" title="个人信息" icon="1" is-link :to="{path: 'personalInformation'}"/>
-        <van-cell class="cars" title="拥有车辆信息" icon="1" is-link to=""/>
-        <van-cell class="order" title="订单信息" icon="1" is-link to=""/>
+        <van-cell
+          class="personal"
+          title="个人信息"
+          icon="1"
+          is-link
+          to="/personalInformation"
+        />
+        <van-cell
+          class="cars"
+          title="拥有车辆信息"
+          icon="1"
+          is-link
+          to="/haveCarsInfo"/>
+        <van-cell
+          class="order"
+          title="订单信息"
+          icon="1"
+          is-link
+          to="orderInfo"/>
       </van-cell-group>
       <van-cell-group>
         <van-cell
@@ -23,14 +37,16 @@
         />
       </van-cell-group>
     </section>
-    <router-link :to="{name: 'personalInformation'}">个人信息</router-link>
   </div>
 </template>
 
 <script>
-// import {Button} from 'vant'
+import PersonalCenterHeader from '@/components/PersonalCenterHeader.vue'
 export default {
   name: 'personalCenter',
+  components:{
+    PersonalCenterHeader,
+  },
   data() {
     return {
       avatar:require('./../assets/logo.png'),
@@ -48,43 +64,10 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-  header{
+  .personalCenter{
     width: 100%;
-    height: 11.566667rem;
-    background: url(./../assets/img/personal-center-bg.jpg) no-repeat center;
-    background-size: 100% 11.566667rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    .avatar{
-      width: 4rem;
-      height: 4rem;
-      border-radius: 50%;
-      border: 3px solid #86e1fc;
-      margin-top: 1.5rem;
-      margin-bottom: .8rem;
-      img{
-        width: 100%;
-        height: 100%;
-        border-radius: 50%;
-      }
-    }
-    .user-name{
-      width: 100%;
-      height: 1rem;
-      color: #fff;
-      font-size: 14px;
-      line-height: 1rem;
-      text-align: center;
-      margin-bottom: .3rem;
-    }
-    .user-id{
-      width: 100%;
-      height: .8rem;
-      font-size: 12px;
-      line-height: 0.8rem;
-      text-align: center;
-    }
+    // height: 100vh;
+    position: absolute;
   }
   section{
     .van-cell-group{

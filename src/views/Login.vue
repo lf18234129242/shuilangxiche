@@ -1,26 +1,24 @@
 <template>
-    <div class="login-box">
-        <div class="login-input-box">
-            <!-- 手机号 -->
-            <div class="usernum">
-                <li class="icon"></li>
-                <input class="phone-num" type="text" placeholder="绑定手机号" v-model="userPhoneNum">
-            </div>
-            <!-- 验证码 -->
-            <div class="usernum verification-code">
-                <li class="icon"></li>
-                <input class="phone-num" type="text" placeholder="请输入验证码" v-model="verificationCode">
-                <van-button round size="mini" @click="getVerificationCode">获取验证码</van-button>
-            </div>
-            <!-- 登陆 -->
-            <van-button class="register" round size="large" @click="register">确认注册</van-button>
-        </div>
+    <div class="login-box-parent">
+        <LoginAndChangePage
+            :userPhoneNum='userPhoneNum'
+            :verificationCode='verificationCode'
+            buttonText="确认登陆"
+            @getVerificationCode="getVerificationCode"
+            @register="register"
+            @sendUserNum="getUserNum"
+            @sendVerCode="sendVerCode"
+        ></LoginAndChangePage>
     </div>
 </template>
 
 <script>
+import LoginAndChangePage from '@/components/LoginAndChangePage'
     export default {
         name: 'login',
+        components:{
+            LoginAndChangePage
+        },
         data() {
             return {
                 userPhoneNum: '',
@@ -28,110 +26,30 @@
             }
         },
         methods: {
+            // 获取验证码
             getVerificationCode() {
                 alert('getVerificationCode')
             },
+            // 注册 、 登陆
             register(){
-                // alert('register')
-                this.$router.push('./personalCenter')
+                this.$router.replace('/')
+            },
+            // 从子组件获取用户手机号
+            getUserNum(userPhoneNum){
+                this.userPhoneNum = userPhoneNum;
+            },
+            // 从子组件获取输入的验证码
+            sendVerCode(verificationCode){
+                this.verificationCode = verificationCode;
             }
         },
     }
 </script>
 
-<style scoped lang="scss">
-.scale-1px{
-    position: relative;
-    border:none;
-}
-.scale-1px:after{
-    content: '';
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    background: #fff;
-    width: 100%;
-    height: 1px;
-    -webkit-transform: scaleY(0.5);
-    transform: scaleY(0.5);
-    -webkit-transform-origin: 0 0;
-    transform-origin: 0 0;
-}
-.cell-padding{
-    padding: 1rem .3rem;
-    box-sizing: border-box;
-}
-.icon-size{
-    width: 1.1rem;
-    height: 1.366667rem;
-}
-.input-w-h{
-    width: 10rem;
-    height: 1.5rem;
-    background: #00bff3;
-    border: none;
-    font-size: 1rem;
-    margin-left: 1rem;
-    color: #fff;
-}
-.login-box{
+<style lang="scss" scoped>
+.login-box-parent{
     width: 100%;
     height: 100vh;
-    background: url(./../assets/img/login-bg.png) no-repeat center;
-    background-size: 100%;
-    padding-top: 16.333333rem;
-    box-sizing: border-box;
-    .login-input-box{
-        width: 100%;
-        height: 14rem;
-        padding: 0 2.233333rem;
-        box-sizing: border-box;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        .usernum{
-            width: 100%;
-            height: 3.566667rem;
-            @extend .scale-1px;
-            @extend .cell-padding;
-            display:flex;
-            .icon{
-                @extend .icon-size;
-                background: url(./../assets/img/ioc.png) no-repeat -14.6rem -4.4rem;
-                background-size: 25rem 19.8rem;
-            }
-            .phone-num{
-                @extend .input-w-h;
-            }
-        }
-        .verification-code{
-            display: flex;
-            align-content: center;
-            .icon{
-                @extend .icon-size;
-                background: url(./../assets/img/ioc.png) no-repeat -14.6rem -7.833333rem;
-                background-size: 25rem 19.8rem;
-            }
-            button{
-                width: 6rem;
-                font-size: 12px;
-                color: #fff;
-                background: #00bff3;
-                border: 1px solid #fff;
-                margin-left: 2rem;
-            }
-        }
-        .register{
-            width: 13.8rem;
-            height: 2.666667rem;
-            border: none;
-            background-image: linear-gradient(to bottom , #01f8ff, #00ccff);
-            font-size: 1.2rem;
-            color: #fff;
-            line-height: 2.666667rem;
-            margin-bottom: 0;
-            margin-top: 4.833333rem;
-        }
-    }
+    position: absolute;
 }
 </style>
