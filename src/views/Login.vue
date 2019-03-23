@@ -3,6 +3,8 @@
         <LoginAndChangePage
             :userPhoneNum='userPhoneNum'
             :verificationCode='verificationCode'
+            :disabled="disabled"
+            :getVerificationCodeText='getVerificationCodeText'
             buttonText="确认登陆"
             @getVerificationCode="getVerificationCode"
             @register="register"
@@ -13,7 +15,9 @@
 </template>
 
 <script>
-import LoginAndChangePage from '@/components/LoginAndChangePage'
+    import LoginAndChangePage from '@/components/LoginAndChangePage'
+    import {Toast} from 'vant'
+    // import { setInterval, clearInterval } from 'timers';
     export default {
         name: 'login',
         components:{
@@ -23,12 +27,25 @@ import LoginAndChangePage from '@/components/LoginAndChangePage'
             return {
                 userPhoneNum: '',
                 verificationCode:'',
+                disabled:false,
+                getVerificationCodeText:'获取验证码',
+                CountdownCount:60
             }
         },
         methods: {
             // 获取验证码
-            getVerificationCode() {
-                alert('getVerificationCode')
+            getVerificationCode(){
+                Toast('验证码已发送')
+                this.disabled = true;
+                let timer = setInterval(()=>{
+                    this.getVerificationCodeText = `${this.CountdownCount--}s后重新获取`;
+                    if(this.CountdownCount < 0){
+                        clearInterval(timer)
+                        this.disabled = false;
+                        this.getVerificationCodeText = '获取验证码';
+                        this.CountdownCount = 60;
+                    }
+                },10)
             },
             // 注册 、 登陆
             register(){

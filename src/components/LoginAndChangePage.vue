@@ -1,12 +1,16 @@
 <template>
     <div class="LoginAndChangePage">
+        <div class="logo">
+            <img src="./../assets/img/logo.jpg" alt="logo">
+        </div>
         <div class="login-input-box">
             <!-- 手机号 -->
             <div class="usernum">
                 <li class="icon"></li>
                 <input
                     class="phone-num"
-                    type="text"
+                    type="number"
+                    max-length="11"
                     placeholder="绑定手机号"
                     v-model="userPhoneNum"
                     @input="sendUserPN"
@@ -14,19 +18,22 @@
             </div>
             <!-- 验证码 -->
             <div class="usernum verification-code">
-                <li class="icon"></li>
-                <input
-                    class="phone-num"
-                    type="text"
-                    placeholder="请输入验证码"
-                    v-model="verificationCode"
-                    @input="sendVerificationCode"
-                >
+                <div class="verification-input">
+                    <li class="icon"></li>
+                    <input
+                        class="phone-num"
+                        type="number"
+                        placeholder="请输入验证码"
+                        v-model="verificationCode"
+                        @input="sendVerificationCode"
+                    >
+                </div>
                 <van-button
                     round
                     size="mini"
                     @click.stop="$emit('getVerificationCode')"
-                >获取验证码</van-button>
+                    :disabled="disabled"
+                >{{getVerificationCodeText}}</van-button>
             </div>
             <!-- 登陆 -->
             <van-button
@@ -42,12 +49,14 @@
 <script>
     export default {
         props: {
-            buttonText:String
+            buttonText:String,
+            disabled:Boolean,
+            getVerificationCodeText:String,
         },
         data() {
             return {
                 userPhoneNum: '',
-                verificationCode:''
+                verificationCode:'',
             }
         },
         methods: {
@@ -56,7 +65,7 @@
             },
             sendVerificationCode() {
                 this.$emit('sendVerCode',this.verificationCode)
-            }
+            },
         },
     }
 </script>
@@ -99,15 +108,26 @@
 .LoginAndChangePage{
     width: 100%;
     height: 100vh;
-    background: url(./../assets/img/login-bg.png) no-repeat center;
+    background: #00bff3 url(./../assets/img/login-bt-bg.jpg) no-repeat left bottom;
     background-size: 100%;
-    padding-top: 16.333333rem;
     box-sizing: border-box;
     position: absolute;
+    .logo{
+        width: 5.8rem;
+        height: 9.933rem;
+        position: absolute;
+        left: 50%;
+        top: 2.2rem;
+        margin-left: -2.9rem;
+        img{
+            width: 100%;
+            height: 100%;
+        }
+    }
     .login-input-box{
         width: 100%;
         height: 14rem;
-        padding: 0 2.233333rem;
+        padding: 16.333rem 2.233333rem 0;
         box-sizing: border-box;
         display: flex;
         flex-direction: column;
@@ -130,18 +150,25 @@
         .verification-code{
             display: flex;
             align-content: center;
+            justify-content: space-between;
+            .verification-input{
+                display: flex;
+            }
             .icon{
                 @extend .icon-size;
                 background: url(./../assets/img/ioc.png) no-repeat -14.6rem -7.833333rem;
                 background-size: 25rem 19.8rem;
             }
             button{
-                width: 6rem;
                 font-size: 12px;
                 color: #fff;
                 background: #00bff3;
                 border: 1px solid #fff;
-                margin-left: 2rem;
+                margin-right: 0.2rem;
+                padding: 0 5px;
+            }
+            .van-button--mini{
+                width: auto;
             }
         }
         .register{

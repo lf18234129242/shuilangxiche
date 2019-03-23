@@ -49,6 +49,9 @@
                 ]
             }
         },
+        mounted(){
+            Toast('加载数据')
+        },
         methods: {
             addCarsInfo() {
                 this.$router.push('/AddCarsInfo')
@@ -69,11 +72,10 @@
                 Dialog.confirm({
                     message: '确定要删除吗？'
                     }).then(() => {
+                        this.carsInfo.splice(index,1)
                         Toast.success(`删除成功: ${index}`)
                     }).catch(() => {
-                        
                 });
-                
             }
         },
     }

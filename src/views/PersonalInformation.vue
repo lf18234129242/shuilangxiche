@@ -8,7 +8,7 @@
         
         <van-cell-group>
             <van-cell
-                title="手机号"
+                :title="phoneNum"
                 icon="1"
             >
                 <van-button 
@@ -31,7 +31,8 @@ import PersonalCenterHeader from '@/components/PersonalCenterHeader.vue'
             return {
                 avatar:require('./../assets/logo.png'),
                 userName:'刘员外',
-                userId:'666666'
+                userId:'666666',
+                phoneNum:'18234129587',
             }
         },
         methods: {

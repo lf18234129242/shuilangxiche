@@ -54,5 +54,17 @@ export default new Router({
       meta:{index:3},
       component: () => import('./views/OrderInfo.vue')
     },
+    {
+      path: '/placeOrder',
+      name: 'placeOrder',
+      meta:{index:1},
+      component: () => import('./views/PlaceOrder.vue')
+    },
+    {
+      path: '/searchPage',
+      name: 'searchPage',
+      meta:{index:2},
+      component: () => import('./views/SearchPage.vue')
+    },
   ]
 })

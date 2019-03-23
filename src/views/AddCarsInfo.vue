@@ -2,18 +2,18 @@
     <div class="AddCarsInfo">
         <shadow-box>
             <van-field
-                    :value="ownerName"
-                    label="车主姓名"
-                />
-                <van-field
-                    :value="carNumber"
-                    label="车牌号"
-                />
-                <van-field
-                    :value="carsBrand"
-                    label="品牌"
-                    @click.stop="show=true"
-                />
+                :value="ownerName"
+                label="车主姓名"
+            />
+            <van-field
+                :value="carNumber"
+                label="车牌号"
+            />
+            <van-field
+                :value="carsBrand"
+                label="品牌"
+                @click.stop="show=true"
+            />
         </shadow-box>
         <submit-button-box
             buttonValue="保存"
