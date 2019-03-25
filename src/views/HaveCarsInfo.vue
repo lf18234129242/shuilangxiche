@@ -1,19 +1,19 @@
 <template>
     <div class="HaveCarsInfo">
-        <div class="cars-info" v-for="(item, index) in carsInfo" :key="item.id">
+        <div class="cars-info" v-for="(item, index) in carsInfo" :key="item.c_user_id">
             <shadow-box>
                 <van-field
-                    :value="item.ownerName"
+                    :value="item.car_owner"
                     label="车主姓名"
                     disabled
                 />
                 <van-field
-                    :value="item.carNumber"
+                    :value="item.plate_number"
                     label="车牌号"
                     disabled
                 />
                 <van-field
-                    :value="item.carsBrand"
+                    :value="item.car_brand"
                     label="品牌"
                     disabled
                 />
@@ -32,25 +32,26 @@
 
 <script>
     import {Toast, Dialog} from 'vant'
+    import url from '@/serviceAPI.config.js'
+    import mdFive from '@/md5.js'
     export default {
         data() {
             return {
-                carsInfo:[
-                    {
-                        ownerName: 'ownerName0',
-                        carNumber: 'carNumber0',
-                        carsBrand: 'carsBrand0',
-                    },
-                    {
-                        ownerName: 'ownerName1',
-                        carNumber: 'carNumber1',
-                        carsBrand: 'carsBrand1',
-                    },
-                ]
+                carsInfo:[]
             }
         },
         mounted(){
-            Toast('加载数据')
+            // Toast('加载数据')
+            var access_token = this.$md5(mdFive.prefix_str + mdFive.access_date + mdFive.api_key)
+            this.axios.post(url.getCarList,{
+                access_token:access_token,
+            }).then(res => {
+                console.log(res)
+                this.carsInfo = res.data.data.data;
+            }).catch(err => {
+                console.log(err)
+            })
+
         },
         methods: {
             addCarsInfo() {
@@ -61,9 +62,10 @@
                 this.$router.push({
                     path:'/AddCarsInfo',
                     query:{
-                        ownerName:this.carsInfo[index].ownerName,
-                        carNumber:this.carsInfo[index].carNumber,
-                        carsBrand:this.carsInfo[index].carsBrand,
+                        car_owner:this.carsInfo[index].car_owner,
+                        plate_number:this.carsInfo[index].plate_number,
+                        car_brand:this.carsInfo[index].car_brand,
+                        id:this.carsInfo[index].id,
                     }
                 })
             },

@@ -5,7 +5,9 @@
       <!-- <router-link to="/about">About</router-link> -->
     </div>
     <transition :name="transitionName">
-      <router-view/>
+      <keep-alive>
+        <router-view/>
+      </keep-alive>
     </transition>
   </div>
 </template>
@@ -25,7 +27,7 @@ export default {
         }else{
         this.transitionName = 'fold-right';
       }
-    }
+    },
   }
 }
 </script>

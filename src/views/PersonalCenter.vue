@@ -12,7 +12,12 @@
           title="个人信息"
           icon="1"
           is-link
-          to="/personalInformation"
+          :to="{
+            path: '/personalInformation',
+            query:{
+              phone:phone
+            }
+          }"
         />
         <van-cell
           class="cars"
@@ -42,6 +47,8 @@
 
 <script>
 import PersonalCenterHeader from '@/components/PersonalCenterHeader.vue'
+import url from '@/serviceAPI.config.js'
+import mdFive from '@/md5.js'
 export default {
   name: 'personalCenter',
   components:{
@@ -51,12 +58,65 @@ export default {
     return {
       avatar:require('./../assets/logo.png'),
       userName:'刘员外',
-      userId:'666666'
+      userId:'666666',
+      phone:''
+    }
+  },
+  // 微信获取用户 openid ------------------------------------------------------------------------------------------------------
+  // getUrlKey (name){//获取url 参数
+    // return decodeURIComponent((new RegExp('[?|&]'+name+'='+'([^&;]+?)(&|#|;|$)').exec(location.href)||[,""])[1].replace(/\+/g,'%20'))||null;
+  // },
+  getCodeApi(state){//获取code   
+    let urlNow=encodeURIComponent(window.location.href);
+    let scope='snsapi_base';    //snsapi_userinfo   //静默授权 用户无感知
+    let appid='wx4cc5d5c123123123';
+    let url=`https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appid}&redirect_uri=${urlNow}&response_type=code&scope=${scope}&state=${state}#wechat_redirect`;
+    window.location.replace(url);
+  },
+  mounted(){
+    // let code=this.getUrlKey("code");
+    // if(code){
+    //   //调用接口获取openId   参考文档https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421140842
+    //   this.getOpenIdApi(code).then(res=>{
+    //     let openId=res.openId;
+    //     alert(openId)
+    //     window.location.replace("/#/login");
+    //   }).catch(err=>{
+    //     alert(err)
+    //     window.location.replace("/#/login");
+    //   })
+    // }else{
+    //   this.getCodeApi("123");
+    // }
+  // 微信获取用户 openid ------------------------------------------------------------------------------------------------------
+
+  // 获取用户个人信息
+    this.httpQuest()
+  },
+  // 更改数据后重新获取用户个人信息
+  activated(){
+    let isReload = this.$route.query.isReload;
+    console.log(isReload)
+    if(isReload){
+      this.httpQuest()
+    }else{
+      return false;
     }
   },
   methods: {
     phoneCall(){
       window.location.href = 'tel://4006701818'
+    },
+    httpQuest(){
+      let access_token = this.$md5(mdFive.prefix_str + mdFive.access_date + mdFive.api_key)
+      this.axios.post(url.getSelfInfo,{
+        access_token:access_token,
+      }).then(res => {
+        console.log(res.data.data)
+        this.phone = res.data.data.phone
+      }).catch(err => {
+        console.log(err)
+      })
     }
   },
 }
@@ -66,7 +126,8 @@ export default {
 <style scoped lang="scss">
   .personalCenter{
     width: 100%;
-    // height: 100vh;
+    height: 100vh;
+    background: #f5f5f5;
     position: absolute;
   }
   section{

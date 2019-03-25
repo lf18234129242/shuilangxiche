@@ -18,6 +18,8 @@
 <script>
     import {Toast} from 'vant'
     import LoginAndChangePage from '@/components/LoginAndChangePage'
+    import url from '@/serviceAPI.config.js'
+    import mdFive from '@/md5.js'
     export default {
         name:'ChangeUserPhoneNum',
         components:{
@@ -32,25 +34,69 @@
                 CountdownCount:60
             }
         },
+        mounted(){
+            this.access_token = this.$md5(mdFive.prefix_str + mdFive.access_date + mdFive.api_key)
+        },
         methods: {
             // 获取验证码
             getVerificationCode(){
-                Toast('验证码已发送')
-                this.disabled = true;
-                let timer = setInterval(()=>{
-                    this.getVerificationCodeText = `${this.CountdownCount--}s后重新获取`;
-                    if(this.CountdownCount < 0){
-                        clearInterval(timer)
-                        this.disabled = false;
-                        this.getVerificationCodeText = '获取验证码';
-                        this.CountdownCount = 60;
-                    }
-                },10)
+                // 判断非空
+                if(!(/^1[34578]\d{9}$/.test(this.userPhoneNum))){ 
+                    Toast("手机号码有误，请重填"); 
+                    return false; 
+                } 
+                this.axios.post(url.getCode, {
+                    access_token:this.access_token,
+                    phone:this.userPhoneNum
+                }).then(res => {
+                    console.log(res)
+                    Toast('验证码已发送')
+                    // 等待60s后继续获取验证码
+                    this.disabled = true;
+                    let timer = setInterval(()=>{
+                        this.getVerificationCodeText = `${this.CountdownCount--}s后重新获取`;
+                        if(this.CountdownCount < 0){
+                            clearInterval(timer)
+                            this.disabled = false;
+                            this.getVerificationCodeText = '获取验证码';
+                            this.CountdownCount = 60;
+                        }
+                    },1000)
+                }).catch(err => {
+                    console.log(err)
+                    Toast('网络不好，请稍后再试！')
+                })
             },
             // 注册 、 登陆
             register(){
-                // this.$router.replace('./personalInformation')
-                this.$router.go(-1)
+                // 判断非空
+                if(!(/^1[34578]\d{9}$/.test(this.userPhoneNum))){ 
+                    Toast("手机号码有误，请重填"); 
+                    return false; 
+                }else if(this.verificationCode.length < 6){
+                    Toast('验证码有误！')
+                    return false; 
+                }
+
+                this.axios.post(url.UpdateClientPhone,{
+                    openid:'sjdfhknviahksjfhahkjchvdfhsk',
+                    access_token:this.access_token,
+                    phone:this.userPhoneNum,
+                    code:this.verificationCode,
+                    username:'刘员外'
+                }).then(res => {
+                    Toast('更换成功!')
+                    console.log(res)
+                    this.$router.push({
+                        path:'/',
+                        query:{
+                            isReload:true
+                        }
+                    })
+                }).catch(err => {
+                    console.log(err)
+                })
+
             },
             // 从子组件获取用户手机号
             getUserNum(userPhoneNum){

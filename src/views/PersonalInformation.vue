@@ -24,6 +24,7 @@
 <script>
 import PersonalCenterHeader from '@/components/PersonalCenterHeader.vue'
     export default {
+        name:'personalInformation',
         components:{
             PersonalCenterHeader,
         },
@@ -34,6 +35,9 @@ import PersonalCenterHeader from '@/components/PersonalCenterHeader.vue'
                 userId:'666666',
                 phoneNum:'18234129587',
             }
+        },
+        mounted(){
+            this.phoneNum = this.$route.query.phone
         },
         methods: {
             changePhoneNum() {
