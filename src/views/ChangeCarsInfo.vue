@@ -1,5 +1,5 @@
 <template>
-    <div class="AddCarsInfo">
+    <div class="ChangeCarsInfo">
         <shadow-box>
             <van-field
                 v-model="car_owner"
@@ -46,16 +46,16 @@ export default {
             plate_number: '',
             car_brand:'',
             car_brand_pid:'',
+            id:'',
             show:false,
             columns: [],
-            access_token:this.$md5(mdFive.prefix_str + mdFive.access_date + mdFive.api_key)
+            access_token:this.$md5(mdFive.prefix_str + mdFive.access_date + mdFive.api_key),
+            fromUrl:''
         }
     },
     mounted(){
         // 获取上个页面传过来的车辆信息
-        this.car_owner = this.$route.query.car_owner ? this.$route.query.car_owner : '';
-        this.plate_number = this.$route.query.plate_number ? this.$route.query.plate_number : '';
-        this.car_brand = this.$route.query.car_brand ? this.$route.query.car_brand : '';
+        this.getCarInfo()
 
         // 获取车辆品牌信息
         this.axios.post(url.getCarBrands,{
@@ -66,24 +66,56 @@ export default {
             Toast(`获取汽车品牌失败！<br> ${err.data}`)
         })
     },
+    activated(){
+        let isReload = this.$route.query.isReload;
+        if(isReload){
+            this.getCarInfo()
+        }else{
+            return false;
+        }
+    },
     methods: {
+        getCarInfo(){
+            this.car_owner = this.$route.query.car_owner ? this.$route.query.car_owner : '';
+            this.plate_number = this.$route.query.plate_number ? this.$route.query.plate_number : '';
+            this.car_brand = this.$route.query.car_brand ? this.$route.query.car_brand : '';
+            this.id = this.$route.query.id ? this.$route.query.id : '';
+            this.car_brand_pid = this.$route.query.car_brand_pid ? this.$route.query.car_brand_pid : '';
+            this.fromUrl = this.$route.query.fromUrl ? this.$route.query.fromUrl : '';
+        },
         // 提交车辆信息
         saveCarsInfo() {
-            this.axios.post(url.addCarInfo,{
+            this.axios.post(url.editCarInfo,{
                 access_token:this.access_token,
                 car_owner:this.car_owner,
                 plate_number:this.plate_number,
                 b_name:this.car_brand,
                 car_brand_pid:this.car_brand_pid,
+                id:this.id,
             }).then(() => {
-                this.$router.push({
-                    path:'/haveCarsInfo',
-                    query:{
-                        isReload:true
-                    }
-                })
+                if(!this.fromUrl){
+                    this.$router.push({
+                        path:'/haveCarsInfo',
+                        query:{
+                            isReload:true
+                        }
+                    })
+                }else{
+                    this.$router.push({
+                        path:'/placeOrder',
+                        query:{
+                            ownerName:this.car_owner,
+                            plate_number:this.plate_number,
+                            car_brand:this.car_brand,
+                            car_brand_pid:this.car_brand_pid,
+                            id:this.id,
+                            isReload:true,
+                        }
+                    })
+                }
+                
             }).catch(err => {
-                Toast(`提交失败！<br> ${err.data}`)
+                Toast(`提交失败！ ${err.data}`)
             })
         },
         // 弹框 确认
@@ -102,7 +134,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.AddCarsInfo{
+.ChangeCarsInfo{
     width: 100%;
     position: absolute;
 }

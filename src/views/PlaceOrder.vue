@@ -5,44 +5,49 @@
                 <span></span>
                 <p>选择清洗车辆</p>
             </li>
-            <div @click="toSearchPage">
+            <div @click="toSearchPage_1">
                 <van-search
-                    placeholder="请输入搜索关键词"
+                    placeholder="选择清洗车辆"
                     disabled
                 />
             </div>
             <!-- 车主信息 -->
             <div class="cars-info">
                 <van-field
-                    :value="ownerName"
+                    v-model="ownerName"
                     label="车主姓名"
                     disabled
                 />
                 <van-field
-                    :value="carNumber"
+                    v-model="carNumber"
                     label="车牌号"
                     disabled
                 />
                 <van-field
-                    :value="carsBrand"
+                    v-model="carsBrand"
                     label="品牌"
                     disabled
                 />
                 <div class="button-box">
-                    <van-button round size="small" @click.stop="modifyThis">修改</van-button>
-                    <van-button round size="small" @click.stop="deleteThis">删除</van-button>
+                    <van-button round size="small" @click.stop="modifyThis()">修改</van-button>
+                    <van-button round size="small" @click.stop="deleteThis()">删除</van-button>
                 </div>
             </div>
         </shadow-box>
         <!-- 选择合作小区 -->
         <shadow-box>
-            <li class="second scale-1px ">
+            <li class="second scale-1px">
                 <span></span>
                 <p>选择合作小区</p>
             </li>
-            <div @click="toSearchPage">
+            <div @click="toSearchPage_2">
                 <van-search
                     placeholder="请输入搜索关键词"
+                    disabled
+                />
+                <van-field
+                    v-model="r_name"
+                    label="小区名称"
                     disabled
                 />
             </div>
@@ -55,7 +60,7 @@
             </li>
             <van-field
                 class="scale-1px"
-                :value="carsPackage"
+                v-model="carsPackage"
                 label="套餐"
                 @click.stop="show=true"
             />
@@ -63,41 +68,124 @@
             <van-popup v-model="show" position="bottom" :overlay="true">
                 <van-picker
                     show-toolbar
-                    title="标题"
-                    :columns="columns"
+                    title="套餐"
+                    :columns="package_list"
                     @confirm="onConfirm"
                     @cancel="onCancel"
                 />
             </van-popup>
         </shadow-box>
+        <submit-button-box
+            buttonValue="下单"
+            @buttonSubmit="placeOrder"
+        ></submit-button-box>
     </div>
 </template>
 
 <script>
     import {Toast, Dialog} from 'vant'
+    import url from '@/serviceAPI.config.js'
+    import mdFive from '@/md5.js'
     export default {
         data() {
             return {
-                ownerName:'1111111111111',
-                carNumber:'1111111111111',
-                carsBrand:'1111111111111',
+                ownerName:'1111111111111',      //车主姓名
+                carNumber:'1111111111111',      //车牌号
+                carsBrand:'1111111111111',      //车型号、品牌
+                id:'',                          // 车辆 id
+                car_brand_pid:'',               //车型号 id
                 carsPackage:'点击选择',
                 show:false,
-                columns: ['杭州', '宁波', '温州', '嘉兴', '湖州']
+                access_token:this.$md5(mdFive.prefix_str + mdFive.access_date + mdFive.api_key),
+                carsInfoList:[],    // 车辆信息
+                join_village:[],    // 合作小区
+                package_list:[],    // 套餐
+                // 小区地址搜索页返回数据
+                address:'',         //地址
+                r_name:'',          //小区名称
+                community_id:'',    //小区 id
+            }
+        },
+        mounted(){
+            this.getInitInfo();
+        },
+        activated(){
+            let isReload = this.$route.query.isReload;
+            if(isReload){
+                // 车辆搜索页 返回数据
+                this.ownerName = this.$route.query.ownerName ? this.$route.query.ownerName : ''
+                this.carNumber = this.$route.query.plate_number ? this.$route.query.plate_number : ''
+                this.carsBrand = this.$route.query.car_brand ? this.$route.query.car_brand : ''
+                this.car_brand_pid = this.$route.query.car_brand_pid ? this.$route.query.car_brand_pid : ''
+                this.c_user_id = this.$route.query.c_user_id ? this.$route.query.c_user_id : ''
+                this.id = this.$route.query.id ? this.$route.query.id : ''
+                // 小区地址搜索页 返回数据
+                this.address = this.$route.query.address ? this.$route.query.address : ''
+                this.r_name = this.$route.query.r_name ? this.$route.query.r_name : ''
+                this.community_id = this.$route.query.community_id ? this.$route.query.community_id : ''
+            }else{
+                return false;
             }
         },
         methods: {
-            toSearchPage() {
-                this.$router.push('/SearchPage')
+            // 获取用户订单所有信息
+            getInitInfo(){
+                this.axios.post(url.getInitInfo,{
+                    access_token:this.access_token
+                }).then(res => {
+                    this.carsInfoList = res.data.data.car_list.data;
+                    this.join_village = res.data.data.join_village.data;
+                    this.package_list = res.data.data.package_list;
+                    for(let i=0;i<this.package_list.length;i++){
+                        this.package_list[i].text = this.package_list[i].package_name + ':' +this. package_list[i].price + '元/月'
+                    }
+                    // 默认显示的车辆信息
+                    this.ownerName = this.carsInfoList[0].car_owner
+                    this.carNumber = this.carsInfoList[0].plate_number
+                    this.carsBrand = this.carsInfoList[0].car_brand
+                    this.id = this.carsInfoList[0].id
+                    this.car_brand_pid = this.carsInfoList[0].car_brand_pid
+                    // 将 carsInfoList 和 join_village 保存到本地
+                    localStorage.setItem('carsInfoList',JSON.stringify(this.carsInfoList))
+                    localStorage.setItem('join_village',JSON.stringify(this.join_village))
+                }).catch(err => {
+                    Toast(`数据请求失败，请稍后再试! ${err}`)
+                })
+            },
+            // 下单
+            placeOrder(){
+                // console.log('下单')
+            },
+            //  to 车辆搜索页
+            toSearchPage_1() {
+                this.$router.push({
+                    path:'/searchPage',
+                    query:{
+                        isReload:true
+                    }
+                })
+            },
+            //  to  小区地址搜索页
+            toSearchPage_2() {
+                this.$router.push({
+                    path:'/searchCommunity',
+                    query:{
+                        isReload:true
+                    }
+                })
             },
             // 修改当前车辆信息
             modifyThis(){
                 this.$router.push({
-                    path:'/AddCarsInfo',
+                    path:'/changeCarsInfo',
                     query:{
-                        ownerName:this.ownerName,
-                        carNumber:this.carNumber,
-                        carsBrand:this.carsBrand,
+                        car_owner:this.ownerName,
+                        plate_number:this.carNumber,
+                        car_brand:this.carsBrand,
+                        id:this.id,
+                        car_brand_pid:this.car_brand_pid,
+                        isReload:true,
+                        fromUrl:'placeOrder'
                     }
                 })
             },
@@ -105,20 +193,26 @@
             deleteThis(){
                 Dialog.confirm({
                     message: '确定要删除吗？'
+                }).then(() => {
+                    this.axios.post(url.deleteCarInfo,{
+                        access_token:this.access_token,
+                        id:this.id,
                     }).then(() => {
-                        this.ownerName = ''
-                        this.carNumber = ''
-                        this.carsBrand = ''
-                        Toast.success(`删除成功`)
-                    }).catch(() => {
+                        this.getInitInfo()
+                        Toast.success(`删除成功!`)
+                    }).catch(err => {
+                        Toast(`删除失败！<br> ${err.data}`)
+                    })
+                }).catch(() => {
+                    Toast('删除失败！')
                 });
             },
             // 选择 套餐
             // 弹框 确认
-            onConfirm(value, index) {
-                Toast(`当前值：${value}, 当前索引：${index}`);
+            onConfirm(value) {
                 this.show = false;
-                this.carsPackage = value;
+                this.carsPackage = value.text;
+                this.community_id = value.id;
             },
             // 弹框 取消
             onCancel() {

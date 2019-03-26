@@ -1,6 +1,6 @@
 <template>
     <div class="HaveCarsInfo">
-        <div class="cars-info" v-for="(item, index) in carsInfo" :key="item.c_user_id">
+        <div class="cars-info" v-for="(item, index) in carsInfo" :key="item.index">
             <shadow-box>
                 <van-field
                     :value="item.car_owner"
@@ -19,7 +19,7 @@
                 />
                 <div class="button-box">
                     <van-button round size="small" @click.stop="modifyThis(index)">修改</van-button>
-                    <van-button round size="small" @click.stop="deleteThis(index)">删除</van-button>
+                    <van-button round size="small" @click.stop="deleteThisInfo(index)">删除</van-button>
                 </div>
             </shadow-box>
         </div>
@@ -37,21 +37,20 @@
     export default {
         data() {
             return {
-                carsInfo:[]
+                carsInfo:[],
+                access_token:this.$md5(mdFive.prefix_str + mdFive.access_date + mdFive.api_key)
             }
         },
         mounted(){
-            // Toast('加载数据')
-            var access_token = this.$md5(mdFive.prefix_str + mdFive.access_date + mdFive.api_key)
-            this.axios.post(url.getCarList,{
-                access_token:access_token,
-            }).then(res => {
-                console.log(res)
-                this.carsInfo = res.data.data.data;
-            }).catch(err => {
-                console.log(err)
-            })
-
+            this.getCarList();
+        },
+        activated(){
+            let isReload = this.$route.query.isReload;
+            if(isReload){
+                this.getCarList()
+            }else{
+                return false;
+            }
         },
         methods: {
             addCarsInfo() {
@@ -60,24 +59,43 @@
             // 修改当前车辆信息
             modifyThis(index){
                 this.$router.push({
-                    path:'/AddCarsInfo',
+                    path:'/ChangeCarsInfo',
                     query:{
                         car_owner:this.carsInfo[index].car_owner,
                         plate_number:this.carsInfo[index].plate_number,
                         car_brand:this.carsInfo[index].car_brand,
                         id:this.carsInfo[index].id,
+                        isReload:true
                     }
                 })
             },
             // 删除当前车辆信息
-            deleteThis(index){
+            deleteThisInfo(index){
                 Dialog.confirm({
                     message: '确定要删除吗？'
+                }).then(() => {
+                    this.axios.post(url.deleteCarInfo,{
+                        access_token:this.access_token,
+                        id:this.carsInfo[index].id,
                     }).then(() => {
+                        Toast.success(`删除成功!`)
+                        // 删除对应数据
                         this.carsInfo.splice(index,1)
-                        Toast.success(`删除成功: ${index}`)
-                    }).catch(() => {
+                    }).catch(err => {
+                        Toast(`删除失败！<br> ${err.data}`)
+                    })
+                }).catch(() => {
+                    Toast('删除失败！')
                 });
+            },
+            getCarList(){
+                this.axios.post(url.getCarList,{
+                    access_token:this.access_token,
+                }).then(res => {
+                    this.carsInfo = res.data.data.data;
+                }).catch(err => {
+                    Toast(`获取信息失败！<br> ${err.data}`)
+                })
             }
         },
     }
@@ -86,7 +104,9 @@
 <style scoped lang="scss">
 .HaveCarsInfo{
     width: 100%;
+    height: auto;
     position: absolute;
+    background: #f5f5f5;
     .button-box{
         width: 100%;
         height: 4rem;

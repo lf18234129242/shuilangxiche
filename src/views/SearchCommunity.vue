@@ -1,5 +1,5 @@
 <template>
-    <div class="SearchPage">
+    <div class="SearchCommunity">
         <div class="search-box">
             <van-search
                 v-model="value"
@@ -17,22 +17,21 @@
             <van-cell-group v-for="(item,index) in searchList" :key="index">
                 <van-cell
                     is-link
-                    :title="item.car_brand"
-                    :value="item.plate_number"
+                    :title="item.r_name"
+                    :value="item.address"
                     :to="{
                         path:'/placeOrder',
                         query:{
-                            ownerName:item.car_owner,
-                            c_user_id:item.c_user_id,
-                            car_brand:item.car_brand,
-                            plate_number:item.plate_number,
-                            id:item.id,
-                            isReload:true
+                            isReload:true,
+                            address:item.address,
+                            r_name:item.r_name,
+                            community_id:item.id
                         }
                     }"
                 />
             </van-cell-group>
         </van-popup>
+
     </div>
 </template>
 
@@ -46,12 +45,12 @@
             }
         },
         mounted(){
-            this.getSearchListFromStorage()
+            this.getJoinVillageFromStorage()
         },
         activated(){
             let isReload = this.$route.query.isReload;
             if(isReload){
-                this.getSearchListFromStorage()
+                this.getJoinVillageFromStorage()
             }else{
                 return false;
             }
@@ -60,15 +59,15 @@
             onSearch() {
                 // console.log('onSearch')
             },
-            getSearchListFromStorage(){
-                this.searchList = JSON.parse(localStorage.getItem('carsInfoList'))
+            getJoinVillageFromStorage(){
+                this.searchList = JSON.parse(localStorage.getItem('join_village'))
             }
         },
     }
 </script>
 
 <style scoped lang="scss">
-.SearchPage{
+.SearchCommunity{
     width: 100%;
     position: absolute;
     .search-box{

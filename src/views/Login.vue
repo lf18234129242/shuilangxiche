@@ -31,11 +31,8 @@
                 disabled:false,
                 getVerificationCodeText:'获取验证码',
                 CountdownCount:60,
-                access_token:''
+                access_token:this.$md5(mdFive.prefix_str + mdFive.access_date + mdFive.api_key)
             }
-        },
-        mounted(){
-            this.access_token = this.$md5(mdFive.prefix_str + mdFive.access_date + mdFive.api_key)
         },
         methods: {
             // 获取验证码
@@ -48,8 +45,7 @@
                 this.axios.post(url.getCode, {
                     access_token:this.access_token,
                     phone:this.userPhoneNum
-                }).then(res => {
-                    console.log(res)
+                }).then(() => {
                     Toast('验证码已发送')
                     // 等待60s后继续获取验证码
                     this.disabled = true;
@@ -63,8 +59,7 @@
                         }
                     },1000)
                 }).catch(err => {
-                    console.log(err)
-                    Toast('网络不好，请稍后再试！')
+                    Toast(`网络不好，请稍后再试！<br> ${err.data}`)
                 })
             },
             // 注册 、 登陆
@@ -84,11 +79,11 @@
                     phone:this.userPhoneNum,
                     code:this.verificationCode,
                     username:'刘员外'
-                }).then(res => {
-                    console.log(res)
+                }).then(() => {
+                    Toast(`登陆成功`)
                     this.$router.replace('/')
                 }).catch(err => {
-                    console.log(err)
+                    Toast(`登陆失败，请稍后再试！<br> ${err.data}`)
                 })
             },
             // 从子组件获取用户手机号

@@ -46,6 +46,7 @@
 </template>
 
 <script>
+import {Toast} from 'vant'
 import PersonalCenterHeader from '@/components/PersonalCenterHeader.vue'
 import url from '@/serviceAPI.config.js'
 import mdFive from '@/md5.js'
@@ -59,7 +60,8 @@ export default {
       avatar:require('./../assets/logo.png'),
       userName:'刘员外',
       userId:'666666',
-      phone:''
+      phone:'',
+      access_token:this.$md5(mdFive.prefix_str + mdFive.access_date + mdFive.api_key)
     }
   },
   // 微信获取用户 openid ------------------------------------------------------------------------------------------------------
@@ -96,7 +98,6 @@ export default {
   // 更改数据后重新获取用户个人信息
   activated(){
     let isReload = this.$route.query.isReload;
-    console.log(isReload)
     if(isReload){
       this.httpQuest()
     }else{
@@ -108,14 +109,12 @@ export default {
       window.location.href = 'tel://4006701818'
     },
     httpQuest(){
-      let access_token = this.$md5(mdFive.prefix_str + mdFive.access_date + mdFive.api_key)
       this.axios.post(url.getSelfInfo,{
-        access_token:access_token,
+        access_token:this.access_token,
       }).then(res => {
-        console.log(res.data.data)
         this.phone = res.data.data.phone
       }).catch(err => {
-        console.log(err)
+        Toast(`获取用户个人信息失败！<br> ${err.data}`)
       })
     }
   },

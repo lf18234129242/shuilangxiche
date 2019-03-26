@@ -27,6 +27,7 @@
         line-height: 2.667rem;
         color: #fff;
         background: #00bff3;
+        margin-bottom: 2rem;
     }
 }
 </style>
