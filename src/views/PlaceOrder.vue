@@ -89,9 +89,9 @@
     export default {
         data() {
             return {
-                ownerName:'1111111111111',      //车主姓名
-                carNumber:'1111111111111',      //车牌号
-                carsBrand:'1111111111111',      //车型号、品牌
+                ownerName:'',      //车主姓名
+                carNumber:'',      //车牌号
+                carsBrand:'',      //车型号、品牌
                 id:'',                          // 车辆 id
                 car_brand_pid:'',               //车型号 id
                 carsPackage:'点击选择',
@@ -100,11 +100,18 @@
                 carsInfoList:[],    // 车辆信息
                 join_village:[],    // 合作小区
                 package_list:[],    // 套餐
+                package_id:'',      //套餐id
                 // 小区地址搜索页返回数据
                 address:'',         //地址
                 r_name:'',          //小区名称
                 community_id:'',    //小区 id
+                unit_price:'',      //套餐单价
+                total_price:'',     //套餐总价
             }
+        },
+        updated(){
+        // 微信获取用户 openid ------------------------------------------------------------------------------------------------------
+            localStorage.setItem('openid',this.$geturlpara.getUrlKey('openid'))
         },
         mounted(){
             this.getInitInfo();
@@ -113,16 +120,16 @@
             let isReload = this.$route.query.isReload;
             if(isReload){
                 // 车辆搜索页 返回数据
-                this.ownerName = this.$route.query.ownerName ? this.$route.query.ownerName : ''
-                this.carNumber = this.$route.query.plate_number ? this.$route.query.plate_number : ''
-                this.carsBrand = this.$route.query.car_brand ? this.$route.query.car_brand : ''
-                this.car_brand_pid = this.$route.query.car_brand_pid ? this.$route.query.car_brand_pid : ''
-                this.c_user_id = this.$route.query.c_user_id ? this.$route.query.c_user_id : ''
-                this.id = this.$route.query.id ? this.$route.query.id : ''
+                this.ownerName = this.$route.query.ownerName ? this.$route.query.ownerName : this.ownerName
+                this.carNumber = this.$route.query.plate_number ? this.$route.query.plate_number : this.carNumber
+                this.carsBrand = this.$route.query.car_brand ? this.$route.query.car_brand : this.carsBrand
+                this.car_brand_pid = this.$route.query.car_brand_pid ? this.$route.query.car_brand_pid : this.car_brand_pid
+                this.c_user_id = this.$route.query.c_user_id ? this.$route.query.c_user_id : this.c_user_id
+                this.id = this.$route.query.id ? this.$route.query.id : this.id
                 // 小区地址搜索页 返回数据
-                this.address = this.$route.query.address ? this.$route.query.address : ''
-                this.r_name = this.$route.query.r_name ? this.$route.query.r_name : ''
-                this.community_id = this.$route.query.community_id ? this.$route.query.community_id : ''
+                this.address = this.$route.query.address ? this.$route.query.address : this.address
+                this.r_name = this.$route.query.r_name ? this.$route.query.r_name : this.r_name
+                this.community_id = this.$route.query.community_id ? this.$route.query.community_id : this.community_id
             }else{
                 return false;
             }
@@ -145,7 +152,7 @@
                     this.carsBrand = this.carsInfoList[0].car_brand
                     this.id = this.carsInfoList[0].id
                     this.car_brand_pid = this.carsInfoList[0].car_brand_pid
-                    // 将 carsInfoList 和 join_village 保存到本地
+                    // 将 拥有骑车(carsInfoList) 和 小区(join_village) 保存到本地
                     localStorage.setItem('carsInfoList',JSON.stringify(this.carsInfoList))
                     localStorage.setItem('join_village',JSON.stringify(this.join_village))
                 }).catch(err => {
@@ -154,7 +161,23 @@
             },
             // 下单
             placeOrder(){
-                // console.log('下单')
+                this.axios.post(url.CreateOrder,{
+                    access_token:this.access_token,
+                    car_id:this.id,
+                    village_id:this.community_id,
+                    package_id:this.package_id,
+                    unit_price:this.unit_price,
+                    total_price:this.unit_price,
+                }).then(res => {
+                    if(res.data.code == 0){
+                        Toast('下单成功！')
+                        this.$router.push('/')
+                    }else{
+                        Toast('下单失败，请核对您所填信息是否正确后再试！')
+                    }
+                }).catch(err => {
+                    Toast('下单失败，请稍后再试！')
+                })
             },
             //  to 车辆搜索页
             toSearchPage_1() {
@@ -207,12 +230,14 @@
                     Toast('删除失败！')
                 });
             },
-            // 选择 套餐
+            // 选择套餐
             // 弹框 确认
             onConfirm(value) {
+                console.log(value)
                 this.show = false;
                 this.carsPackage = value.text;
-                this.community_id = value.id;
+                this.package_id = value.id;
+                this.unit_price = value.price;
             },
             // 弹框 取消
             onCancel() {

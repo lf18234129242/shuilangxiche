@@ -66,6 +66,11 @@ export default {
             Toast(`获取汽车品牌失败！<br> ${err.data}`)
         })
     },
+    activated(){
+        this.car_owner = ''
+        this.plate_number = ''
+        this.car_brand = ''
+    },
     methods: {
         // 提交车辆信息
         saveCarsInfo() {
@@ -76,12 +81,13 @@ export default {
                 b_name:this.car_brand,
                 car_brand_pid:this.car_brand_pid,
             }).then(() => {
-                this.$router.push({
+                this.$router.replace({
                     path:'/haveCarsInfo',
                     query:{
                         isReload:true
                     }
                 })
+                this.$router.go(-1)
             }).catch(err => {
                 Toast(`提交失败！<br> ${err.data}`)
             })

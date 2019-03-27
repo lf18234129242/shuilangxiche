@@ -41,6 +41,10 @@
                 access_token:this.$md5(mdFive.prefix_str + mdFive.access_date + mdFive.api_key)
             }
         },
+        updated(){
+        // 微信获取用户 openid ------------------------------------------------------------------------------------------------------
+            localStorage.setItem('openid',this.$geturlpara.getUrlKey('openid'))
+        },
         mounted(){
             this.getCarList();
         },
@@ -54,7 +58,12 @@
         },
         methods: {
             addCarsInfo() {
-                this.$router.push('/AddCarsInfo')
+                this.$router.push({
+                    path:'/AddCarsInfo',
+                    query:{
+                        isReload:true
+                    }
+                })
             },
             // 修改当前车辆信息
             modifyThis(index){

@@ -4,17 +4,17 @@
             <shadow-box>
                 <li class="first scale-1px">
                     <span></span>
-                    <p>{{item.numberPlate}}</p>
+                    <p>{{item.plate_number}}</p>
                 </li>
                 <li class="two scale-1px">
-                    <p>{{item.status}}</p>
-                    <p>{{item.cooperative}}</p>
+                    <p>{{item.order_status}}</p>
+                    <p>{{item.village_name}}</p>
                 </li>
                 <li class="three scale-1px">
-                    <p>套餐类型：{{item.package}}</p>
+                    <p>套餐类型：{{item.package_name}}</p>
                 </li>
                 <li class="three">
-                    <p>到期时间：{{item.endTime}}</p>
+                    <p>到期时间：{{item.over_time}}</p>
                 </li>
             </shadow-box>
         </div>
@@ -22,46 +22,41 @@
 </template>
 
 <script>
+import {Toast} from 'vant'
+import url from '@/serviceAPI.config.js'
+import mdFive from '@/md5.js'
 export default {
     data() {
         return {
-            orderInfo:[
-                {
-                    numberPlate:'沪A：92123',
-                    status:'进行中...',
-                    cooperative :'鲲鹏小区',
-                    package:'包年',
-                    endTime:'2019/09/09',
-                },
-                {
-                    numberPlate:'沪A：92123',
-                    status:'进行中...',
-                    cooperative :'鲲鹏小区',
-                    package:'包年',
-                    endTime:'2019/09/09',
-                },
-                {
-                    numberPlate:'沪A：92123',
-                    status:'进行中...',
-                    cooperative :'鲲鹏小区',
-                    package:'包年',
-                    endTime:'2019/09/09',
-                },
-                {
-                    numberPlate:'沪A：92123',
-                    status:'进行中...',
-                    cooperative :'鲲鹏小区',
-                    package:'包年',
-                    endTime:'2019/09/09',
-                },
-                {
-                    numberPlate:'沪A：92123',
-                    status:'进行中...',
-                    cooperative :'鲲鹏小区',
-                    package:'包年',
-                    endTime:'2019/09/09',
-                },
-            ]
+            orderInfo:[],
+            access_token:this.$md5(mdFive.prefix_str + mdFive.access_date + mdFive.api_key)
+        }
+    },
+    updated(){
+    // 微信获取用户 openid ------------------------------------------------------------------------------------------------------
+        localStorage.setItem('openid',this.$geturlpara.getUrlKey('openid'))
+    },
+    mounted(){
+        this.getOrderList()
+    },
+    activated(){
+        let isReload = this.$route.query.isReload;
+        if(isReload){
+            this.getOrderList()
+        }else{
+            return false;
+        }
+    },
+    methods: {
+        getOrderList() {
+            this.axios.post(url.getOrderList,{
+                access_token:this.access_token,
+                page:1
+            }).then(res => {
+                this.orderInfo = res.data.data;
+            }).catch(err => {
+                Toast(`获取订单失败！ ${err.data}`)
+            })
         }
     },
 }

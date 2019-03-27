@@ -30,14 +30,20 @@ import PersonalCenterHeader from '@/components/PersonalCenterHeader.vue'
         },
         data() {
             return {
-                avatar:require('./../assets/logo.png'),
-                userName:'刘员外',
-                userId:'666666',
+                avatar:localStorage.getItem('avatar'),
+                userName:localStorage.getItem('userName'),
+                userId:localStorage.getItem('userId'),
                 phoneNum:'18234129587',
             }
         },
         mounted(){
             this.phoneNum = this.$route.query.phone
+        },
+        activated(){
+            let isReload = this.$route.query.isReload;
+            if(isReload){
+                this.phoneNum = this.$route.query.phone;
+            }
         },
         methods: {
             changePhoneNum() {

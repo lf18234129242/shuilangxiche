@@ -17,6 +17,7 @@ export default new Router({
       meta:{
         index:1,
         title: '登陆/注册',
+        auth:true,
       },
       component: () => import('./views/Login.vue')
     },
@@ -26,6 +27,7 @@ export default new Router({
       meta:{
         index:2,
         title:'个人中心',
+        auth:true,
       },
       component: () => import('./views/PersonalCenter.vue'),
     },
@@ -35,6 +37,7 @@ export default new Router({
       meta:{
         index:3,
         title:'个人信息',
+        auth:true,
       },
       component: () => import('./views/PersonalInformation.vue')
     },
@@ -44,6 +47,7 @@ export default new Router({
       meta:{
         index:4,
         title:'修改个人信息',
+        auth:true,
       },
       component: () => import('./views/ChangeUserPhoneNum.vue')
     },
@@ -53,6 +57,7 @@ export default new Router({
       meta:{
         index:3,
         title:'拥有车辆信息',
+        auth:true,
       },
       component: () => import('./views/HaveCarsInfo.vue')
     },
@@ -62,6 +67,7 @@ export default new Router({
       meta:{
         index:4,
         title:'添加车辆信息',
+        auth:true,
       },
       component: () => import('./views/AddCarsInfo.vue')
     },
@@ -71,6 +77,7 @@ export default new Router({
       meta:{
         index:4,
         title:'修改车辆信息',
+        auth:true,
       },
       component: () => import('./views/ChangeCarsInfo.vue')
     },
@@ -80,6 +87,7 @@ export default new Router({
       meta:{
         index:3,
         title:'订单信息',
+        auth:true,
       },
       component: () => import('./views/OrderInfo.vue')
     },
@@ -89,6 +97,7 @@ export default new Router({
       meta:{
         index:1,
         title:'下单',
+        auth:true,
       },
       component: () => import('./views/PlaceOrder.vue')
     },
@@ -98,6 +107,7 @@ export default new Router({
       meta:{
         index:3,
         title:'搜索',
+        auth:true,
       },
       component: () => import('./views/SearchPage.vue')
     },
@@ -107,6 +117,7 @@ export default new Router({
       meta:{
         index:3,
         title:'搜索',
+        auth:true,
       },
       component: () => import('./views/SearchCommunity.vue')
     },

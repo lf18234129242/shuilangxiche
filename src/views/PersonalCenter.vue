@@ -15,7 +15,8 @@
           :to="{
             path: '/personalInformation',
             query:{
-              phone:phone
+              phone:phone,
+              isReload:true
             }
           }"
         />
@@ -30,7 +31,12 @@
           title="订单信息"
           icon="1"
           is-link
-          to="orderInfo"/>
+          :to="{
+            path:'/orderInfo',
+            query:{
+              isReload:true
+            }
+          }"/>
       </van-cell-group>
       <van-cell-group>
         <van-cell
@@ -57,41 +63,18 @@ export default {
   },
   data() {
     return {
-      avatar:require('./../assets/logo.png'),
-      userName:'刘员外',
-      userId:'666666',
+      avatar:localStorage.getItem('avatar'),
+      userName:localStorage.getItem('userName'),
+      userId:localStorage.getItem('userId'),
       phone:'',
       access_token:this.$md5(mdFive.prefix_str + mdFive.access_date + mdFive.api_key)
     }
   },
+  updated(){
   // 微信获取用户 openid ------------------------------------------------------------------------------------------------------
-  // getUrlKey (name){//获取url 参数
-    // return decodeURIComponent((new RegExp('[?|&]'+name+'='+'([^&;]+?)(&|#|;|$)').exec(location.href)||[,""])[1].replace(/\+/g,'%20'))||null;
-  // },
-  getCodeApi(state){//获取code   
-    let urlNow=encodeURIComponent(window.location.href);
-    let scope='snsapi_base';    //snsapi_userinfo   //静默授权 用户无感知
-    let appid='wx4cc5d5c123123123';
-    let url=`https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appid}&redirect_uri=${urlNow}&response_type=code&scope=${scope}&state=${state}#wechat_redirect`;
-    window.location.replace(url);
+    localStorage.setItem('openid',this.$geturlpara.getUrlKey('openid'))
   },
   mounted(){
-    // let code=this.getUrlKey("code");
-    // if(code){
-    //   //调用接口获取openId   参考文档https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421140842
-    //   this.getOpenIdApi(code).then(res=>{
-    //     let openId=res.openId;
-    //     alert(openId)
-    //     window.location.replace("/#/login");
-    //   }).catch(err=>{
-    //     alert(err)
-    //     window.location.replace("/#/login");
-    //   })
-    // }else{
-    //   this.getCodeApi("123");
-    // }
-  // 微信获取用户 openid ------------------------------------------------------------------------------------------------------
-
   // 获取用户个人信息
     this.httpQuest()
   },
