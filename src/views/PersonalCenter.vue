@@ -73,6 +73,12 @@ export default {
   updated(){
   // 微信获取用户 openid ------------------------------------------------------------------------------------------------------
     localStorage.setItem('openid',this.$geturlpara.getUrlKey('openid'))
+    // localStorage.setItem('openid',this.getUrlKey('openid'))
+    alert(localStorage.getItem('openid'))
+    alert(window.loaction.href)
+    this.avatar = localStorage.getItem('avatar');
+    this.userName = localStorage.getItem('userName');
+    this.userId = localStorage.getItem('userId');
   },
   mounted(){
   // 获取用户个人信息
@@ -99,6 +105,9 @@ export default {
       }).catch(err => {
         Toast(`获取用户个人信息失败！<br> ${err.data}`)
       })
+    },
+    getUrlKey(name){
+        return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.href) || [''])[1].replace(/\+/g,'%20')) || null;
     }
   },
 }
