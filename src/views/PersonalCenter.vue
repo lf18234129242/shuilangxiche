@@ -70,28 +70,27 @@ export default {
       access_token:this.$md5(mdFive.prefix_str + mdFive.access_date + mdFive.api_key)
     }
   },
-  updated(){
-  // 微信获取用户 openid ------------------------------------------------------------------------------------------------------
-    localStorage.setItem('openid',this.$geturlpara.getUrlKey('openid'))
-    // localStorage.setItem('openid',this.getUrlKey('openid'))
-    alert(localStorage.getItem('openid'))
-    alert(window.loaction.href)
-    this.avatar = localStorage.getItem('avatar');
-    this.userName = localStorage.getItem('userName');
-    this.userId = localStorage.getItem('userId');
-  },
   mounted(){
-  // 获取用户个人信息
-    this.httpQuest()
+    // 获取用户个人信息
+    this.httpQuest();
+    this.getUserAvatar();
   },
   // 更改数据后重新获取用户个人信息
   activated(){
+    this.getUserAvatar()
     let isReload = this.$route.query.isReload;
     if(isReload){
       this.httpQuest()
+      this.getUserAvatar()
     }else{
       return false;
     }
+  },
+  updated(){
+  // 微信获取用户 openid ------------------------------------------------------------------------------------------------------
+    localStorage.setItem('openid',this.$geturlpara.getUrlKey('openid'))
+    // 从本地获取用户 头像 名称 等信息
+    this.getUserAvatar()
   },
   methods: {
     phoneCall(){
@@ -106,8 +105,11 @@ export default {
         Toast(`获取用户个人信息失败！<br> ${err.data}`)
       })
     },
-    getUrlKey(name){
-        return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.href) || [''])[1].replace(/\+/g,'%20')) || null;
+    // 从本地获取用户 头像 名称 等信息
+    getUserAvatar(){
+      this.avatar = localStorage.getItem('avatar');
+      this.userName = localStorage.getItem('userName');
+      this.userId = localStorage.getItem('userId');
     }
   },
 }

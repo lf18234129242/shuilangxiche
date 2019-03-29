@@ -37,7 +37,7 @@
             </div>
             <!-- 登陆 -->
             <van-button
-                class="register"
+                class="submit-button"
                 round
                 size="large"
                 @click.stop="$emit('register')"
@@ -126,7 +126,6 @@
     }
     .login-input-box{
         width: 100%;
-        height: 14rem;
         padding: 16.333rem 2.233333rem 0;
         box-sizing: border-box;
         display: flex;
@@ -137,7 +136,8 @@
             height: 3.566667rem;
             @extend .scale-1px;
             @extend .cell-padding;
-            display:flex;
+            // display:flex;
+            display: -webkit-box;
             .icon{
                 @extend .icon-size;
                 background: url(./../assets/img/ioc.png) no-repeat -14.6rem -4.4rem;
@@ -148,7 +148,8 @@
             }
         }
         .verification-code{
-            display: flex;
+            // display: flex;
+            display: -webkit-box;
             align-content: center;
             justify-content: space-between;
             .verification-input{
@@ -171,11 +172,14 @@
                 width: auto;
             }
         }
-        .register{
+        .submit-button{
+            display: inline-block;
+            box-sizing: content-box;
             width: 13.8rem;
             height: 2.666667rem;
             border: none;
-            background-image: linear-gradient(to bottom , #01f8ff, #00ccff);
+            background: linear-gradient(#01f8ff, #00ccff);
+            background-size: 100%;
             font-size: 1.2rem;
             color: #fff;
             line-height: 2.666667rem;

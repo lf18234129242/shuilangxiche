@@ -86,6 +86,7 @@
     import {Toast, Dialog} from 'vant'
     import url from '@/serviceAPI.config.js'
     import mdFive from '@/md5.js'
+    import wx from 'weixin-js-sdk';
     export default {
         data() {
             return {
@@ -110,8 +111,11 @@
             }
         },
         updated(){
-        // 微信获取用户 openid ------------------------------------------------------------------------------------------------------
-            localStorage.setItem('openid',this.$geturlpara.getUrlKey('openid'))
+        // 微信获取用户 openid ------------------------------------
+            console.log('PlaceOrder.vue:'+localStorage.getItem('openid'))
+            if(!localStorage.getItem('openid')){
+                localStorage.setItem('openid',this.$geturlpara.getUrlKey('openid'))
+            }
         },
         mounted(){
             this.getInitInfo();
@@ -170,8 +174,50 @@
                     total_price:this.unit_price,
                 }).then(res => {
                     if(res.data.code == 0){
+                        console.log(res)
+                        // 支付
+                        this.axios.post(url.getWxVoucher,{
+                            access_token:this.access_token,
+                            id:res.data.data.order_id,
+                            url:'http://www.ichevip.com/view/placeOrder'
+                        }).then(response => {
+                            console.log(response)
+                            let configJson = JSON.parse(response.data.data.configJson);
+                            wx.config({
+                                debug: configJson.debug, // 开启调试模式,调用的所有api的返回值会在客户端alert出来
+                                appId: configJson.appId, // 必填，公众号的唯一标识
+                                timestamp: configJson.timestamp, // 必填，生成签名的时间戳
+                                nonceStr: configJson.nonceStr, // 必填，生成签名的随机串
+                                signature: configJson.signature,// 必填，签名，见附录1
+                                jsApiList: [
+                                    configJson.jsApiList
+                                ] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+                            });
+
+                            wx.ready(function () {
+                                let options = response.data.data.options;
+                                // 支付成功后的操作
+                                options.success = function () {
+                                    window.location.href = "http://www.ichevip.com/view/orderInfo";
+                                };
+                                
+                                //  取消支付的操作
+                                options.cancel = function () {
+                                    pay_order = true;
+                                };
+                                
+                                // 支付失败的处理 
+                                options.fail = function () {
+                                    pay_order = true;
+                                };
+                                // 传入参数，发起JSAPI支付
+                                wx.chooseWXPay(options);
+                            })
+                        }).catch(error => {
+                            console.log(error)
+                        })
                         Toast('下单成功！')
-                        this.$router.push('/')
+                        // this.$router.push('/personalCenter')
                     }else{
                         Toast('下单失败，请核对您所填信息是否正确后再试！')
                     }
@@ -272,6 +318,7 @@
 }
 .PlaceOrder{
     width: 100%;
+    height: 100%;
     position: absolute;
     background: #f5f5f5;
     padding: 1rem 0 2rem;

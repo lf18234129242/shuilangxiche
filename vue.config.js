@@ -1,6 +1,6 @@
 // vue.config.js
 module.exports = {
-    baseUrl: '/',           // 基本路径
+    baseUrl: '/view/',           // 基本路径
     outputDir: 'dist',       //打包后的输出目录
     assetsDir: "static",  //把打包文件放到static文件夹内，更美观一些。
     // indexPath: "index.html",

@@ -5,13 +5,18 @@ import Router from 'vue-router'
 Vue.use(Router)
 export default new Router({
   mode: 'history',
+  base: 'view',
   routes: [
-    // {
-    //   path: '/',
-    //   name: 'home',
-    //   meta:{index:0},
-    //   component: Home
-    // },
+    {
+      path: '/author',
+      name: 'author',
+      meta:{
+        index:1,
+        title: '正在授权登陆...',
+        auth:true,
+      },
+      component: () => import('./views/Author.vue')
+    },
     {
       path: '/login',
       name: 'login',
@@ -23,7 +28,7 @@ export default new Router({
       component: () => import('./views/Login.vue')
     },
     {
-      path: '/', //个人中心
+      path: '/personalCenter', //个人中心
       name: 'personalCenter',
       meta:{
         index:2,

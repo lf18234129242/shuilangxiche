@@ -35,11 +35,16 @@ export default {
 
 <style>
 @import url(./assets/css/base.css);
-#app {
+html,body,#app {
+  position: fixed;
   width: 100%;
-  height: 100vh;
-  background: #f5f5f5;
+  height: 100%;
+  background-color: #f5f5f5;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
 }
+
 .fold-left-enter-active {
     animation-name: fold-left-in;
     animation-duration: .3s;

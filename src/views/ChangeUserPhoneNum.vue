@@ -83,7 +83,7 @@
                 }).then(() => {
                     Toast('更换成功!')
                     this.$router.push({
-                        path:'/',
+                        path:'/personalCenter',
                         query:{
                             isReload:true
                         }

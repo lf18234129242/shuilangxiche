@@ -72,16 +72,19 @@
                     Toast('验证码有误！')
                     return false; 
                 }
-
                 this.axios.post(url.BindClientPhone,{
-                    openid:'sjdfhknviahksjfhahkjchvdfhsk',
+                    openid:localStorage.getItem('openid'),
                     access_token:this.access_token,
                     phone:this.userPhoneNum,
                     code:this.verificationCode,
                     username:'刘员外'
-                }).then(() => {
+                }).then((res) => {
+                    if(res.code = '1020009'){
+                        window.location.href = res.data.oauth_url
+                    }else{
+                        this.$router.replace(localStorage.getItem('beforeLoginUrl'))
+                    }
                     Toast(`登陆成功`)
-                    this.$router.replace('/')
                 }).catch(err => {
                     Toast(`登陆失败，请稍后再试！<br> ${err.data}`)
                 })

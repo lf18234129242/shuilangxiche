@@ -14,6 +14,7 @@ const URL = {
     getOrderList: BASEURL + 'Order/getOrderList',               //获取用户订单列表
     getOauthRedirect: BASEURL + 'Wechat/getOauthRedirect',      //获取微信授权
     getClientInfo: BASEURL + 'Client/getClientInfo',            //获取微信用户信息
+    getWxVoucher: BASEURL + 'Orderpay/getWxVoucher',            //微信支付
 }
 
 module.exports = URL

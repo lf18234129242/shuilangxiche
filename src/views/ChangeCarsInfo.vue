@@ -16,6 +16,7 @@
                 label="品牌"
                 placeholder="请选择汽车品牌"
                 @click.stop="show=true"
+                @focus="forbidKeyboard"
             />
         </shadow-box>
         <submit-button-box
@@ -75,6 +76,10 @@ export default {
         }
     },
     methods: {
+        // 禁止选择器键盘弹出
+        forbidKeyboard(){
+            document.activeElement.blur();
+        },
         getCarInfo(){
             this.car_owner = this.$route.query.car_owner ? this.$route.query.car_owner : '';
             this.plate_number = this.$route.query.plate_number ? this.$route.query.plate_number : '';
@@ -94,14 +99,15 @@ export default {
                 id:this.id,
             }).then(() => {
                 if(!this.fromUrl){
-                    this.$router.push({
+                    this.$router.replace({
                         path:'/haveCarsInfo',
                         query:{
                             isReload:true
                         }
                     })
+                    this.$router.go(-1)
                 }else{
-                    this.$router.push({
+                    this.$router.replace({
                         path:'/placeOrder',
                         query:{
                             ownerName:this.car_owner,
@@ -112,6 +118,7 @@ export default {
                             isReload:true,
                         }
                     })
+                    this.$router.go(-1)
                 }
                 
             }).catch(err => {
