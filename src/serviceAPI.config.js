@@ -12,6 +12,7 @@ const URL = {
     getInitInfo: BASEURL + 'Order/getInitInfo',                 //下单页面获取信息接口
     CreateOrder: BASEURL + 'Order/CreateOrder',                 //用户提交、生成订单
     getOrderList: BASEURL + 'Order/getOrderList',               //获取用户订单列表
+    getClearOrder: BASEURL + 'Order/getClearOrder',             //获取订单详情
     getOauthRedirect: BASEURL + 'Wechat/getOauthRedirect',      //获取微信授权
     getClientInfo: BASEURL + 'Client/getClientInfo',            //获取微信用户信息
     getWxVoucher: BASEURL + 'Orderpay/getWxVoucher',            //微信支付

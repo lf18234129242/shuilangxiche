@@ -1,22 +1,30 @@
 <template>
     <div class="OrderInfo">
         <div v-for="(item, index) in orderInfo" :key="index">
-            <shadow-box>
-                <li class="first scale-1px">
-                    <span></span>
-                    <p>{{item.plate_number}}</p>
-                </li>
-                <li class="two scale-1px">
-                    <p>{{item.order_status}}</p>
-                    <p>{{item.village_name}}</p>
-                </li>
-                <li class="three scale-1px">
-                    <p>套餐类型：{{item.package_name}}</p>
-                </li>
-                <li class="three">
-                    <p>到期时间：{{item.over_time}}</p>
-                </li>
-            </shadow-box>
+            <router-link :to="{
+                path:'/orderDetails',
+                query:{
+                    isReload:true,
+                    order_id:item.order_id
+                }
+            }">
+                <shadow-box>
+                    <li class="first scale-1px">
+                        <span></span>
+                        <p>{{item.plate_number}}</p>
+                    </li>
+                    <li class="two scale-1px">
+                        <p>{{item.order_status}}</p>
+                        <p>{{item.village_name}}</p>
+                    </li>
+                    <li class="three scale-1px">
+                        <p>套餐类型：{{item.package_name}}</p>
+                    </li>
+                    <li class="three">
+                        <p>到期时间：{{item.over_time}}</p>
+                    </li>
+                </shadow-box>
+            </router-link>
         </div>
     </div>
 </template>
@@ -54,6 +62,7 @@ export default {
                 page:1
             }).then(res => {
                 this.orderInfo = res.data.data;
+                console.log(this.orderInfo)
             }).catch(err => {
                 Toast(`获取订单失败！ ${err.data}`)
             })

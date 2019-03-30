@@ -127,5 +127,15 @@ export default new Router({
       },
       component: () => import('./views/SearchCommunity.vue')
     },
+    {
+      path: '/orderDetails',  //搜索 小区
+      name: 'orderDetails',
+      meta:{
+        index:4,
+        title:'搜索',
+        auth:true,
+      },
+      component: () => import('./views/OrderDetails.vue')
+    },
   ]
 })

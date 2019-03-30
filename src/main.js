@@ -5,7 +5,7 @@ import axios from 'axios'
 import md5 from 'js-md5';
 import ShadowBox from './components/ShadowBox'
 import SubmitButtonBox from './components/SubmitButtonBox'
-import {Button, NavBar, Cell, CellGroup, Field, Picker, Popup, Search, Area, Toast} from 'vant'
+import {Button, NavBar, Cell, CellGroup, Field, Picker, Popup, Search, Area, Toast, Step, Steps} from 'vant'
 import url from '@/serviceAPI.config.js'
 import mdFive from '@/md5.js'
 // 获取url里的参数值
@@ -14,7 +14,7 @@ import geturlpara from './geturlpara.js'
 Vue.component('shadow-box',ShadowBox)
 Vue.component('submit-button-box',SubmitButtonBox)
 
-Vue.use(Button).use(NavBar).use(Cell).use(CellGroup).use(Field).use(Picker).use(Popup).use(Search).use(Area).use(Toast)
+Vue.use(Button).use(NavBar).use(Cell).use(CellGroup).use(Field).use(Picker).use(Popup).use(Search).use(Area).use(Toast).use(Step).use(Steps)
 
 Vue.config.productionTip = false
 //把 `axios` 加到 `Vue` 的原型中

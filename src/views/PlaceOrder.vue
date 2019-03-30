@@ -77,7 +77,7 @@
         </shadow-box>
         <submit-button-box
             buttonValue="下单"
-            @buttonSubmit="placeOrder"
+            @buttonSubmit.once="placeOrder"
         ></submit-button-box>
     </div>
 </template>
@@ -198,7 +198,13 @@
                                 let options = response.data.data.options;
                                 // 支付成功后的操作
                                 options.success = function () {
-                                    window.location.href = "http://www.ichevip.com/view/orderInfo";
+                                    // window.location.href = `http://www.ichevip.com/view/orderDetails?order_id=${res.data.data.order_id}`;
+                                    this.$router.push({
+                                        path:'/orderDetails',
+                                        query:{
+                                            order_id:res.data.data.order_id
+                                        }
+                                    })
                                 };
                                 
                                 //  取消支付的操作
@@ -370,7 +376,4 @@
         }
     }
 }
-
 </style>
-
-
