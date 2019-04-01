@@ -15,8 +15,7 @@
           :to="{
             path: '/personalInformation',
             query:{
-              phone:phone,
-              isReload:true
+              phone:phone
             }
           }"
         />
@@ -25,18 +24,15 @@
           title="拥有车辆信息"
           icon="1"
           is-link
-          to="/haveCarsInfo"/>
+          to="/haveCarsInfo"
+        />
         <van-cell
           class="order"
           title="订单信息"
           icon="1"
           is-link
-          :to="{
-            path:'/orderInfo',
-            query:{
-              isReload:true
-            }
-          }"/>
+          to="/orderInfo"
+        />
       </van-cell-group>
       <van-cell-group>
         <van-cell
@@ -87,7 +83,7 @@ export default {
     }
   },
   updated(){
-  // 微信获取用户 openid ------------------------------------------------------------------------------------------------------
+  // 微信获取用户 openid -----------------------------------------------------------
     localStorage.setItem('openid',this.$geturlpara.getUrlKey('openid'))
     // 从本地获取用户 头像 名称 等信息
     this.getUserAvatar()

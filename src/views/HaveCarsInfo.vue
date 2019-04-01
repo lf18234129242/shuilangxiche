@@ -1,32 +1,39 @@
 <template>
     <div class="HaveCarsInfo">
-        <div class="cars-info" v-for="(item, index) in carsInfo" :key="item.index">
-            <shadow-box>
-                <van-field
-                    :value="item.car_owner"
-                    label="车主姓名"
-                    disabled
-                />
-                <van-field
-                    :value="item.plate_number"
-                    label="车牌号"
-                    disabled
-                />
-                <van-field
-                    :value="item.car_brand"
-                    label="品牌"
-                    disabled
-                />
-                <div class="button-box">
-                    <van-button round size="small" @click.stop="modifyThis(index)">修改</van-button>
-                    <van-button round size="small" @click.stop="deleteThisInfo(index)">删除</van-button>
-                </div>
-            </shadow-box>
-        </div>
-        <submit-button-box
-            buttonValue="添加车辆信息"
-            @buttonSubmit="addCarsInfo"
-        ></submit-button-box>
+        <van-pull-refresh v-model="isLoading" @refresh="onRefresh">
+            <div class="cars-info" v-for="(item, index) in carsInfo" :key="item.index">
+                <shadow-box>
+                    <van-field
+                        :value="item.car_owner"
+                        label="车主姓名"
+                        disabled
+                    />
+                    <van-field
+                        :value="item.plate_number"
+                        label="车牌号"
+                        disabled
+                    />
+                    <van-field
+                        :value="item.car_brand"
+                        label="品牌"
+                        disabled
+                    />
+                    <van-field
+                        :value="item.parking ? item.parking : '暂无'"
+                        label="车位号"
+                        disabled
+                    />
+                    <div class="button-box">
+                        <van-button round size="small" @click.stop="modifyThis(index)">修改</van-button>
+                        <van-button round size="small" @click.stop="deleteThisInfo(index)">删除</van-button>
+                    </div>
+                </shadow-box>
+            </div>
+            <submit-button-box
+                buttonValue="添加车辆信息"
+                @buttonSubmit="addCarsInfo"
+            ></submit-button-box>
+        </van-pull-refresh>
     </div>
 </template>
 
@@ -34,36 +41,37 @@
     import {Toast, Dialog} from 'vant'
     import url from '@/serviceAPI.config.js'
     import mdFive from '@/md5.js'
+    import ScrollPosition from './../scroll-position.js'
     export default {
         data() {
             return {
+                isLoading: false,
                 carsInfo:[],
                 access_token:this.$md5(mdFive.prefix_str + mdFive.access_date + mdFive.api_key)
             }
         },
         updated(){
-        // 微信获取用户 openid ------------------------------------------------------------------------------------------------------
+        // 微信获取用户 openid 
             localStorage.setItem('openid',this.$geturlpara.getUrlKey('openid'))
         },
         mounted(){
+            // 获取骑车列表
             this.getCarList();
-        },
-        activated(){
-            let isReload = this.$route.query.isReload;
-            if(isReload){
-                this.getCarList()
-            }else{
-                return false;
-            }
+
+            // 重置滚动条位置
+            ScrollPosition.get.call(this);
         },
         methods: {
+            // 下拉刷新
+            onRefresh() {
+                setTimeout(() => {
+                    this.$toast('刷新成功');
+                    this.isLoading = false;
+                    this.getCarList();
+                }, 500);
+            },
             addCarsInfo() {
-                this.$router.push({
-                    path:'/AddCarsInfo',
-                    query:{
-                        isReload:true
-                    }
-                })
+                this.$router.push('/AddCarsInfo')
             },
             // 修改当前车辆信息
             modifyThis(index){
@@ -74,7 +82,8 @@
                         plate_number:this.carsInfo[index].plate_number,
                         car_brand:this.carsInfo[index].car_brand,
                         id:this.carsInfo[index].id,
-                        isReload:true
+                        parking:this.carsInfo[index].parking,
+                        car_brand_pid:this.carsInfo[index].car_brand_pid,
                     }
                 })
             },

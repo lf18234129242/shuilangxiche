@@ -27,7 +27,6 @@
                             car_brand:item.car_brand,
                             plate_number:item.plate_number,
                             id:item.id,
-                            isReload:true
                         }
                     }"
                 />
@@ -48,14 +47,14 @@
         mounted(){
             this.getSearchListFromStorage()
         },
-        activated(){
-            let isReload = this.$route.query.isReload;
-            if(isReload){
-                this.getSearchListFromStorage()
-            }else{
-                return false;
-            }
-        },
+        // activated(){
+        //     let isReload = this.$route.query.isReload;
+        //     if(isReload){
+        //         this.getSearchListFromStorage()
+        //     }else{
+        //         return false;
+        //     }
+        // },
         methods: {
             onSearch() {
                 // console.log('onSearch')

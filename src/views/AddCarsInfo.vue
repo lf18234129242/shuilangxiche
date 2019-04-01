@@ -1,4 +1,5 @@
 <template>
+<keep-alive include="addCarsInfo">
     <div class="AddCarsInfo">
         <shadow-box>
             <van-field
@@ -17,6 +18,11 @@
                 placeholder="请选择汽车品牌"
                 @click.stop="show=true"
             />
+            <van-field
+                v-model="parking"
+                label="车牌号"
+                placeholder="请输入车位号"
+            />
         </shadow-box>
         <submit-button-box
             buttonValue="保存"
@@ -33,6 +39,7 @@
             />
         </van-popup>
     </div>
+</keep-alive>
 </template>
 
 <script>
@@ -46,30 +53,22 @@ export default {
             plate_number: '',
             car_brand:'',
             car_brand_pid:'',
+            parking:'',
             show:false,
             columns: [],
             access_token:this.$md5(mdFive.prefix_str + mdFive.access_date + mdFive.api_key)
         }
     },
     mounted(){
-        // 获取上个页面传过来的车辆信息
-        this.car_owner = this.$route.query.car_owner ? this.$route.query.car_owner : '';
-        this.plate_number = this.$route.query.plate_number ? this.$route.query.plate_number : '';
-        this.car_brand = this.$route.query.car_brand ? this.$route.query.car_brand : '';
-
         // 获取车辆品牌信息
         this.axios.post(url.getCarBrands,{
             access_token:this.access_token
         }).then(res => {
+            // 将后台传过来的 json 数组里面的 name 换成 text
             this.columns = JSON.parse(JSON.stringify(res.data.data).replace(/name/g,'text'))
         }).catch(err => {
             Toast(`获取汽车品牌失败！<br> ${err.data}`)
         })
-    },
-    activated(){
-        this.car_owner = ''
-        this.plate_number = ''
-        this.car_brand = ''
     },
     methods: {
         // 提交车辆信息
@@ -80,6 +79,7 @@ export default {
                 plate_number:this.plate_number,
                 b_name:this.car_brand,
                 car_brand_pid:this.car_brand_pid,
+                parking:this.parking,
             }).then(() => {
                 this.$router.replace({
                     path:'/haveCarsInfo',
@@ -94,7 +94,6 @@ export default {
         },
         // 弹框 确认
         onConfirm(value) {
-            // Toast(`当前值：${value.text}, 当前索引：${index}`);
             this.show = false;
             this.car_brand = value.text;
             this.car_brand_pid = value.b_id;

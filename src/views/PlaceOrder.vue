@@ -28,6 +28,11 @@
                     label="品牌"
                     disabled
                 />
+                <van-field
+                    v-model="parking"
+                    label="车位号"
+                    disabled
+                />
                 <div class="button-box">
                     <van-button round size="small" @click.stop="modifyThis()">修改</van-button>
                     <van-button round size="small" @click.stop="deleteThis()">删除</van-button>
@@ -63,6 +68,7 @@
                 v-model="carsPackage"
                 label="套餐"
                 @click.stop="show=true"
+                @focus="forbidKeyboard"
             />
             <!-- 弹出层 -->
             <van-popup v-model="show" position="bottom" :overlay="true">
@@ -93,8 +99,9 @@
                 ownerName:'',      //车主姓名
                 carNumber:'',      //车牌号
                 carsBrand:'',      //车型号、品牌
-                id:'',                          // 车辆 id
-                car_brand_pid:'',               //车型号 id
+                id:'',             // 车辆 id
+                car_brand_pid:'',  //车型号 id
+                parking:'',        //车位号 id
                 carsPackage:'点击选择',
                 show:false,
                 access_token:this.$md5(mdFive.prefix_str + mdFive.access_date + mdFive.api_key),
@@ -112,33 +119,30 @@
         },
         updated(){
         // 微信获取用户 openid ------------------------------------
-            console.log('PlaceOrder.vue:'+localStorage.getItem('openid'))
             if(!localStorage.getItem('openid')){
                 localStorage.setItem('openid',this.$geturlpara.getUrlKey('openid'))
             }
         },
         mounted(){
             this.getInitInfo();
-        },
-        activated(){
-            let isReload = this.$route.query.isReload;
-            if(isReload){
-                // 车辆搜索页 返回数据
-                this.ownerName = this.$route.query.ownerName ? this.$route.query.ownerName : this.ownerName
-                this.carNumber = this.$route.query.plate_number ? this.$route.query.plate_number : this.carNumber
-                this.carsBrand = this.$route.query.car_brand ? this.$route.query.car_brand : this.carsBrand
-                this.car_brand_pid = this.$route.query.car_brand_pid ? this.$route.query.car_brand_pid : this.car_brand_pid
-                this.c_user_id = this.$route.query.c_user_id ? this.$route.query.c_user_id : this.c_user_id
-                this.id = this.$route.query.id ? this.$route.query.id : this.id
-                // 小区地址搜索页 返回数据
-                this.address = this.$route.query.address ? this.$route.query.address : this.address
-                this.r_name = this.$route.query.r_name ? this.$route.query.r_name : this.r_name
-                this.community_id = this.$route.query.community_id ? this.$route.query.community_id : this.community_id
-            }else{
-                return false;
-            }
+            // 车辆搜索页 返回数据
+            this.ownerName = this.$route.query.ownerName ? this.$route.query.ownerName : this.ownerName
+            this.carNumber = this.$route.query.plate_number ? this.$route.query.plate_number : this.carNumber
+            this.carsBrand = this.$route.query.car_brand ? this.$route.query.car_brand : this.carsBrand
+            this.car_brand_pid = this.$route.query.car_brand_pid ? this.$route.query.car_brand_pid : this.car_brand_pid
+            this.parking = this.$route.query.parking ? this.$route.query.parking : this.car_brand_pid
+            this.c_user_id = this.$route.query.c_user_id ? this.$route.query.c_user_id : this.c_user_id
+            this.id = this.$route.query.id ? this.$route.query.id : this.id
+            // 小区地址搜索页 返回数据
+            this.address = this.$route.query.address ? this.$route.query.address : this.address
+            this.r_name = this.$route.query.r_name ? this.$route.query.r_name : this.r_name
+            this.community_id = this.$route.query.community_id ? this.$route.query.community_id : this.community_id
         },
         methods: {
+            // 禁止选择器键盘弹出
+            forbidKeyboard(){
+                document.activeElement.blur();
+            },
             // 获取用户订单所有信息
             getInitInfo(){
                 this.axios.post(url.getInitInfo,{
@@ -156,6 +160,7 @@
                     this.carsBrand = this.carsInfoList[0].car_brand
                     this.id = this.carsInfoList[0].id
                     this.car_brand_pid = this.carsInfoList[0].car_brand_pid
+                    this.parking = this.carsInfoList[0].parking
                     // 将 拥有骑车(carsInfoList) 和 小区(join_village) 保存到本地
                     localStorage.setItem('carsInfoList',JSON.stringify(this.carsInfoList))
                     localStorage.setItem('join_village',JSON.stringify(this.join_village))
@@ -174,14 +179,12 @@
                     total_price:this.unit_price,
                 }).then(res => {
                     if(res.data.code == 0){
-                        console.log(res)
                         // 支付
                         this.axios.post(url.getWxVoucher,{
                             access_token:this.access_token,
                             id:res.data.data.order_id,
                             url:'http://www.ichevip.com/view/placeOrder'
                         }).then(response => {
-                            console.log(response)
                             let configJson = JSON.parse(response.data.data.configJson);
                             wx.config({
                                 debug: configJson.debug, // 开启调试模式,调用的所有api的返回值会在客户端alert出来
@@ -198,13 +201,7 @@
                                 let options = response.data.data.options;
                                 // 支付成功后的操作
                                 options.success = function () {
-                                    // window.location.href = `http://www.ichevip.com/view/orderDetails?order_id=${res.data.data.order_id}`;
-                                    this.$router.push({
-                                        path:'/orderDetails',
-                                        query:{
-                                            order_id:res.data.data.order_id
-                                        }
-                                    })
+                                    window.location.href = `http://www.ichevip.com/view/orderDetails?id=${res.data.data.order_id}`;
                                 };
                                 
                                 //  取消支付的操作
@@ -220,34 +217,23 @@
                                 wx.chooseWXPay(options);
                             })
                         }).catch(error => {
-                            console.log(error)
+                            Toast(`下单失败，请稍后再试！${error}`)
                         })
                         Toast('下单成功！')
-                        // this.$router.push('/personalCenter')
                     }else{
                         Toast('下单失败，请核对您所填信息是否正确后再试！')
                     }
                 }).catch(err => {
-                    Toast('下单失败，请稍后再试！')
+                    Toast(`下单失败，请稍后再试！${err}`)
                 })
             },
             //  to 车辆搜索页
             toSearchPage_1() {
-                this.$router.push({
-                    path:'/searchPage',
-                    query:{
-                        isReload:true
-                    }
-                })
+                this.$router.push('/searchPage')
             },
             //  to  小区地址搜索页
             toSearchPage_2() {
-                this.$router.push({
-                    path:'/searchCommunity',
-                    query:{
-                        isReload:true
-                    }
-                })
+                this.$router.push('/searchCommunity')
             },
             // 修改当前车辆信息
             modifyThis(){
@@ -259,7 +245,7 @@
                         car_brand:this.carsBrand,
                         id:this.id,
                         car_brand_pid:this.car_brand_pid,
-                        isReload:true,
+                        parking:this.parking,
                         fromUrl:'placeOrder'
                     }
                 })
@@ -285,7 +271,6 @@
             // 选择套餐
             // 弹框 确认
             onConfirm(value) {
-                console.log(value)
                 this.show = false;
                 this.carsPackage = value.text;
                 this.package_id = value.id;

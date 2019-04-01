@@ -82,12 +82,7 @@
                     username:'刘员外'
                 }).then(() => {
                     Toast('更换成功!')
-                    this.$router.push({
-                        path:'/personalCenter',
-                        query:{
-                            isReload:true
-                        }
-                    })
+                    this.$router.push('/personalCenter')
                 }).catch(err => {
                     Toast(`更换失败，请稍后再试！<br> ${err.data}`)
                 })

@@ -39,12 +39,12 @@ import PersonalCenterHeader from '@/components/PersonalCenterHeader.vue'
         mounted(){
             this.phoneNum = this.$route.query.phone
         },
-        activated(){
-            let isReload = this.$route.query.isReload;
-            if(isReload){
-                this.phoneNum = this.$route.query.phone;
-            }
-        },
+        // activated(){
+        //     let isReload = this.$route.query.isReload;
+        //     if(isReload){
+        //         this.phoneNum = this.$route.query.phone;
+        //     }
+        // },
         methods: {
             changePhoneNum() {
                 this.$router.push('/changeUserPhoneNum')

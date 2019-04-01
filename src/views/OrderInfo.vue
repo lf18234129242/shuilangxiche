@@ -1,31 +1,32 @@
 <template>
     <div class="OrderInfo">
-        <div v-for="(item, index) in orderInfo" :key="index">
-            <router-link :to="{
-                path:'/orderDetails',
-                query:{
-                    isReload:true,
-                    order_id:item.order_id
-                }
-            }">
-                <shadow-box>
-                    <li class="first scale-1px">
-                        <span></span>
-                        <p>{{item.plate_number}}</p>
-                    </li>
-                    <li class="two scale-1px">
-                        <p>{{item.order_status}}</p>
-                        <p>{{item.village_name}}</p>
-                    </li>
-                    <li class="three scale-1px">
-                        <p>套餐类型：{{item.package_name}}</p>
-                    </li>
-                    <li class="three">
-                        <p>到期时间：{{item.over_time}}</p>
-                    </li>
-                </shadow-box>
-            </router-link>
-        </div>
+        <van-pull-refresh v-model="isLoading" @refresh="onRefresh">
+            <div v-for="(item, index) in orderInfo" :key="index">
+                <router-link :to="{
+                    path:'/orderDetails',
+                    query:{
+                        id:item.id
+                    }
+                }">
+                    <shadow-box>
+                        <li class="first scale-1px">
+                            <span></span>
+                            <p>{{item.plate_number}}</p>
+                        </li>
+                        <li class="two scale-1px">
+                            <p>{{item.order_status}}</p>
+                            <p>{{item.village_name}}</p>
+                        </li>
+                        <li class="three scale-1px">
+                            <p>套餐类型：{{item.package_name}}</p>
+                        </li>
+                        <li class="three">
+                            <p>到期时间：{{item.over_time}}</p>
+                        </li>
+                    </shadow-box>
+                </router-link>
+            </div>
+        </van-pull-refresh>
     </div>
 </template>
 
@@ -36,25 +37,26 @@ import mdFive from '@/md5.js'
 export default {
     data() {
         return {
+            isLoading: false,
             orderInfo:[],
             access_token:this.$md5(mdFive.prefix_str + mdFive.access_date + mdFive.api_key)
         }
     },
     updated(){
-    // 微信获取用户 openid ------------------------------------------------------------------------------------------------------
+    // 微信获取用户 openid ----------------------------------------
         localStorage.setItem('openid',this.$geturlpara.getUrlKey('openid'))
     },
     mounted(){
         this.getOrderList()
     },
-    activated(){
-        let isReload = this.$route.query.isReload;
-        if(isReload){
-            this.getOrderList()
-        }else{
-            return false;
-        }
-    },
+    // activated(){
+    //     let isReload = this.$route.query.isReload;
+    //     if(isReload){
+    //         this.getOrderList()
+    //     }else{
+    //         return false;
+    //     }
+    // },
     methods: {
         getOrderList() {
             this.axios.post(url.getOrderList,{
@@ -62,10 +64,17 @@ export default {
                 page:1
             }).then(res => {
                 this.orderInfo = res.data.data;
-                console.log(this.orderInfo)
             }).catch(err => {
                 Toast(`获取订单失败！ ${err.data}`)
             })
+        },
+        // 下拉刷新
+        onRefresh() {
+            setTimeout(() => {
+                this.$toast('刷新成功');
+                this.isLoading = false;
+                this.getOrderList();
+            }, 500);
         }
     },
 }

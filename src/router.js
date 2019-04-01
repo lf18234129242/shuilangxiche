@@ -6,6 +6,16 @@ Vue.use(Router)
 export default new Router({
   mode: 'history',
   base: 'view',
+  // scrollBehavior(to,from,savedPosition) {
+  //   console.log(to)
+  //   console.log(from)
+  //   console.log(savedPosition)
+  //   if(savedPosition){
+  //     return savedPosition;
+  //   }else{
+  //     return {x:0,y:0};
+  //   }
+  // },
   routes: [
     {
       path: '/author',
@@ -28,8 +38,8 @@ export default new Router({
       component: () => import('./views/Login.vue')
     },
     {
-      path: '/personalCenter', //个人中心
-      name: 'personalCenter',
+      path: '/', //个人中心
+      name: '',
       meta:{
         index:2,
         title:'个人中心',
@@ -139,3 +149,29 @@ export default new Router({
     },
   ]
 })
+
+
+    // const position = {}
+
+    // if(to.hash){
+    //   position.selector = to.hash;
+
+    //   if (document.querySelector(to.hash)) {
+    //     return position
+    //   }
+    //   return false
+    // }
+    // return new Promise(resolve => {
+    //   // 检查是否有任何匹配的路由配置包含需要滚动到顶部的元数据
+    //   if (to.matched.some(m => m.meta.scrollToTop)) {
+    //     // 如果未提供选择器，或者选择器与任何元素不匹配，将使用坐标。
+    //     position.x = 0
+    //     position.y = 0
+    //   }
+
+    //   // 等待外转换完成（如有必要）
+    //   this.app.$root.$once('triggerScroll', () => {
+    //     // 如果解决的位置是假的或空的对象，将保留当前的滚动位置。
+    //     resolve(position)
+    //   })
+    // })

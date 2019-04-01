@@ -9,6 +9,7 @@
                 <van-step>待付款</van-step>
                 <van-step>已付款</van-step>
                 <van-step>进行中</van-step>
+                <van-step>已结束</van-step>
             </van-steps>
             <div class="detail-title">
                 <span></span>
@@ -59,37 +60,41 @@
             return {
                 // 步骤条数值
                 active: 0,
-                ownerName:'车主姓名',   //车主姓名
-                carNumber:'车牌号',   //车牌号
-                carsBrand:'品牌',   //品牌
-                r_name:'小区信息',      //小区信息
-                package_detail:'套餐信息',   //套餐信息
+                ownerName:'',   //车主姓名
+                carNumber:'',   //车牌号
+                carsBrand:'',   //品牌
+                r_name:'',      //小区信息
+                package_detail:'',   //套餐信息
+                id:'',   //订单 id
                 access_token:this.$md5(mdFive.prefix_str + mdFive.access_date + mdFive.api_key),
             }
         },
         mounted(){
             this.getMessageFromPrePage();
         },
-        activated(){
-            let isReload = this.$route.query.isReload;
-            if(isReload){
-                this.getMessageFromPrePage();
-            }else{
-                return false;
-            }
-        },
+        // activated(){
+        //     let isReload = this.$route.query.isReload;
+        //     if(isReload){
+        //         this.getMessageFromPrePage();
+        //     }else{
+        //         return false;
+        //     }
+        // },
         methods: {
             getMessageFromPrePage(){
-                this.order_id = this.$route.query.order_id;
-                console.log(this.order_id)
+                this.id = this.$route.query.id ? this.$route.query.id : this.$geturlpara.getUrlKey('id');
                 this.axios.post(url.getClearOrder,{
                     access_token:this.access_token,
-                    id:this.order_id
+                    id:this.id
                 }).then(res => {
-                    console.log(res)
-                    console.log(this.access_token)
+                    this.ownerName = res.data.data.car_owner
+                    this.carNumber = res.data.data.plate_number
+                    this.carsBrand = res.data.data.car_brand
+                    this.r_name = res.data.data.village_name
+                    this.package_detail = res.data.data.package_name
+                    this.active = res.data.data.order_status
                 }).catch(err => {
-                    console.log(err)
+                    Toast(`获取订单失败！ ${err.data}`)
                 })
             },
             phoneCall(){
@@ -130,7 +135,7 @@
             width: 1.333rem;
             height: 1.333rem;
             background: url(./../assets/img/list.png) no-repeat center;
-            background-size: 1.3rem 1.3rem;
+            background-size: 1.1rem 1.1rem;
             margin-right: .667rem;
         }
         h2{
@@ -161,8 +166,6 @@
             }
         }
         .username{
-            // height: 3.2rem;
-            // line-height: 3.2rem;
             padding: 1.1rem 0 ;
             @extend .scale-1px;
         }
@@ -174,7 +177,7 @@
                 width: 1rem;
                 height: 1rem;
                 background: url(./../assets/img/yes.png) no-repeat center;
-                background-size: 1rem 1rem;
+                background-size: 0.8rem 0.8rem;
                 margin-right: .4rem;
             }
             p{

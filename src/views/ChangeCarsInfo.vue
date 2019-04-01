@@ -18,6 +18,11 @@
                 @click.stop="show=true"
                 @focus="forbidKeyboard"
             />
+            <van-field
+                v-model="parking"
+                label="车位号"
+                placeholder="请输入车位号"
+            />
         </shadow-box>
         <submit-button-box
             buttonValue="保存"
@@ -48,6 +53,7 @@ export default {
             car_brand:'',
             car_brand_pid:'',
             id:'',
+            parking:'',
             show:false,
             columns: [],
             access_token:this.$md5(mdFive.prefix_str + mdFive.access_date + mdFive.api_key),
@@ -67,14 +73,6 @@ export default {
             Toast(`获取汽车品牌失败！<br> ${err.data}`)
         })
     },
-    activated(){
-        let isReload = this.$route.query.isReload;
-        if(isReload){
-            this.getCarInfo()
-        }else{
-            return false;
-        }
-    },
     methods: {
         // 禁止选择器键盘弹出
         forbidKeyboard(){
@@ -85,6 +83,7 @@ export default {
             this.plate_number = this.$route.query.plate_number ? this.$route.query.plate_number : '';
             this.car_brand = this.$route.query.car_brand ? this.$route.query.car_brand : '';
             this.id = this.$route.query.id ? this.$route.query.id : '';
+            this.parking = this.$route.query.parking ? this.$route.query.parking : '';
             this.car_brand_pid = this.$route.query.car_brand_pid ? this.$route.query.car_brand_pid : '';
             this.fromUrl = this.$route.query.fromUrl ? this.$route.query.fromUrl : '';
         },
@@ -96,15 +95,11 @@ export default {
                 plate_number:this.plate_number,
                 b_name:this.car_brand,
                 car_brand_pid:this.car_brand_pid,
+                parking:this.parking,
                 id:this.id,
             }).then(() => {
                 if(!this.fromUrl){
-                    this.$router.replace({
-                        path:'/haveCarsInfo',
-                        query:{
-                            isReload:true
-                        }
-                    })
+                    this.$router.replace('/haveCarsInfo')
                     this.$router.go(-1)
                 }else{
                     this.$router.replace({
@@ -114,20 +109,18 @@ export default {
                             plate_number:this.plate_number,
                             car_brand:this.car_brand,
                             car_brand_pid:this.car_brand_pid,
+                            parking:this.parking,
                             id:this.id,
-                            isReload:true,
                         }
                     })
                     this.$router.go(-1)
                 }
-                
             }).catch(err => {
                 Toast(`提交失败！ ${err.data}`)
             })
         },
         // 弹框 确认
         onConfirm(value) {
-            // Toast(`当前值：${value.text}, 当前索引：${index}`);
             this.show = false;
             this.car_brand = value.text;
             this.car_brand_pid = value.b_id;

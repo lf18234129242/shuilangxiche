@@ -5,16 +5,17 @@ import axios from 'axios'
 import md5 from 'js-md5';
 import ShadowBox from './components/ShadowBox'
 import SubmitButtonBox from './components/SubmitButtonBox'
-import {Button, NavBar, Cell, CellGroup, Field, Picker, Popup, Search, Area, Toast, Step, Steps} from 'vant'
+import {Button, NavBar, Cell, CellGroup, Field, Picker, Popup, Search, Area, Toast, Step, Steps, PullRefresh} from 'vant'
 import url from '@/serviceAPI.config.js'
 import mdFive from '@/md5.js'
 // 获取url里的参数值
 import geturlpara from './geturlpara.js'
+import ScrollPosition from './scroll-position.js'
 
 Vue.component('shadow-box',ShadowBox)
 Vue.component('submit-button-box',SubmitButtonBox)
 
-Vue.use(Button).use(NavBar).use(Cell).use(CellGroup).use(Field).use(Picker).use(Popup).use(Search).use(Area).use(Toast).use(Step).use(Steps)
+Vue.use(Button).use(NavBar).use(Cell).use(CellGroup).use(Field).use(Picker).use(Popup).use(Search).use(Area).use(Toast).use(Step).use(Steps).use(PullRefresh)
 
 Vue.config.productionTip = false
 //把 `axios` 加到 `Vue` 的原型中
@@ -25,13 +26,19 @@ Vue.prototype.$geturlpara = geturlpara
 
 /* 路由发生变化修改页面title */
 router.beforeEach((to, from, next) => {
+  let from_name = from.path ? from.path : 'name';
+  // 保存滚动条位置
+  ScrollPosition.save(from_name);
+  console.log(from_name)
+  console.log(window.pageYOffset)
+  // console.log(from_name.window.pageYOffset)
+  // console.log(from_name.document.body.scrollTop)
+  // console.log(from_name.document.documentElement.scrollTop)
+
+  // access_token
   let access_token = md5(mdFive.prefix_str + mdFive.access_date + mdFive.api_key);
-  let fromUrl = '';
-  if(to.name == null){
-    fromUrl = 'personalCenter'
-  }else{
-    fromUrl = to.name;
-  }
+
+  // 为页面添加标题
   if (to.meta.title) {
     document.title = to.meta.title
   }
@@ -46,7 +53,7 @@ router.beforeEach((to, from, next) => {
       //访问服务器，如果没有 openid ，去授权获取 openid
       axios.post(url.getOauthRedirect,{
         access_token:access_token,
-        redirect_uri:`http://www.ichevip.com/view/${fromUrl}`
+        redirect_uri:`http://www.ichevip.com/view/${to.name}`
       }).then(res => {
         if(res.data.code == 0){
           window.location.href = res.data.data.oauth_url;
@@ -57,7 +64,7 @@ router.beforeEach((to, from, next) => {
         // 如果 openid 失效，重新获取
         axios.post(url.getOauthRedirect,{
           access_token:access_token,
-          redirect_uri:`http://www.ichevip.com/view/${fromUrl}`
+          redirect_uri:`http://www.ichevip.com/view/${to.name}`
         }).then(res => {
           if(res.data.code == 0){
             window.location.href = res.data.data.oauth_url;
