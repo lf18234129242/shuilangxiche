@@ -20,7 +20,7 @@
             />
             <van-field
                 v-model="parking"
-                label="车牌号"
+                label="车位号"
                 placeholder="请输入车位号"
             />
         </shadow-box>

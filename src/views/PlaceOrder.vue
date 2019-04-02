@@ -94,6 +94,7 @@
     import mdFive from '@/md5.js'
     import wx from 'weixin-js-sdk';
     export default {
+        name:'placeOrder',
         data() {
             return {
                 ownerName:'',      //车主姓名
@@ -117,14 +118,24 @@
                 total_price:'',     //套餐总价
             }
         },
-        updated(){
-        // 微信获取用户 openid ------------------------------------
+        mounted(){
             if(!localStorage.getItem('openid')){
                 localStorage.setItem('openid',this.$geturlpara.getUrlKey('openid'))
             }
+            this.axios.post(url.getSelfInfo,{
+                access_token:this.access_token
+            }).then(res => {
+                console.log(res.data.data.phone)
+                if(res.data.data.phone == ''){
+                    localStorage.setItem('beforeLoginUrl','/PlaceOrder')
+                    console.log('placeorder---'+localStorage.getItem('beforeLoginUrl'))
+                    this.$router.push('/login')
+                }else{
+                    this.getInitInfo();
+                }
+            })
         },
-        mounted(){
-            this.getInitInfo();
+        activated(){
             // 车辆搜索页 返回数据
             this.ownerName = this.$route.query.ownerName ? this.$route.query.ownerName : this.ownerName
             this.carNumber = this.$route.query.plate_number ? this.$route.query.plate_number : this.carNumber
@@ -137,9 +148,19 @@
             this.address = this.$route.query.address ? this.$route.query.address : this.address
             this.r_name = this.$route.query.r_name ? this.$route.query.r_name : this.r_name
             this.community_id = this.$route.query.community_id ? this.$route.query.community_id : this.community_id
+
+        },
+        updated(){
+        // // 微信获取用户 openid ------------------------------------
+        //     if(!localStorage.getItem('openid')){
+        //         localStorage.setItem('openid',this.$geturlpara.getUrlKey('openid'))
+        //     }
         },
         methods: {
-            // 禁止选择器键盘弹出
+            // beforeRouteEnter(to,from,next){
+            //     localStorage.setItem('beforeLoginUrl',to.name)
+            // },
+            // 点击选择器禁止键盘弹出
             forbidKeyboard(){
                 document.activeElement.blur();
             },
@@ -165,7 +186,7 @@
                     localStorage.setItem('carsInfoList',JSON.stringify(this.carsInfoList))
                     localStorage.setItem('join_village',JSON.stringify(this.join_village))
                 }).catch(err => {
-                    Toast(`数据请求失败，请稍后再试! ${err}`)
+                    // Toast(`数据请求失败，请稍后再试! ${err}`)
                 })
             },
             // 下单

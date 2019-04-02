@@ -47,6 +47,7 @@
 </template>
 
 <script>
+    // import $ from 'jquery'
     export default {
         props: {
             buttonText:String,
@@ -71,23 +72,6 @@
 </script>
 
 <style scoped lang="scss">
-.scale-1px{
-    position: relative;
-    border:none;
-}
-.scale-1px:after{
-    content: '';
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    background: #fff;
-    width: 100%;
-    height: 1px;
-    -webkit-transform: scaleY(0.5);
-    transform: scaleY(0.5);
-    -webkit-transform-origin: 0 0;
-    transform-origin: 0 0;
-}
 .cell-padding{
     padding: 1rem .3rem;
     box-sizing: border-box;
@@ -105,11 +89,21 @@
     margin-left: 1rem;
     color: #fff;
 }
+@media (max-height:400px) {
+    .LoginAndChangePage{
+        background: #00bff3;
+        background-size: 100%;
+    }
+}
+@media (min-height:400px) {
+    .LoginAndChangePage{
+        background: #00bff3 url(./../assets/img/login-bt-bg.jpg) no-repeat left bottom;
+        background-size: 100%;
+    }
+}
 .LoginAndChangePage{
     width: 100%;
     height: 100vh;
-    background: #00bff3 url(./../assets/img/login-bt-bg.jpg) no-repeat left bottom;
-    background-size: 100%;
     box-sizing: border-box;
     position: absolute;
     .logo{
@@ -133,11 +127,11 @@
         align-items: center;
         .usernum{
             width: 100%;
-            height: 3.566667rem;
-            @extend .scale-1px;
+            border-bottom: 1px solid #fff;
             @extend .cell-padding;
-            // display:flex;
-            display: -webkit-box;
+            // display: -webkit-box;
+            display: flex;
+            align-items: center;
             .icon{
                 @extend .icon-size;
                 background: url(./../assets/img/ioc.png) no-repeat -14.6rem -4.4rem;
@@ -148,7 +142,6 @@
             }
         }
         .verification-code{
-            // display: flex;
             display: -webkit-box;
             align-content: center;
             justify-content: space-between;

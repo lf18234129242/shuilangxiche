@@ -30,6 +30,7 @@
                 verificationCode:'',
                 disabled:false,
                 getVerificationCodeText:'获取验证码',
+                focusState:false,
                 CountdownCount:60,
                 access_token:this.$md5(mdFive.prefix_str + mdFive.access_date + mdFive.api_key)
             }
@@ -46,7 +47,6 @@
                     access_token:this.access_token,
                     phone:this.userPhoneNum
                 }).then(() => {
-                    Toast('验证码已发送')
                     // 等待60s后继续获取验证码
                     this.disabled = true;
                     let timer = setInterval(()=>{
@@ -73,16 +73,15 @@
                     return false; 
                 }
                 this.axios.post(url.BindClientPhone,{
-                    openid:localStorage.getItem('openid'),
                     access_token:this.access_token,
                     phone:this.userPhoneNum,
                     code:this.verificationCode,
-                    username:'刘员外'
                 }).then((res) => {
                     if(res.code = '1020009'){
-                        window.location.href = res.data.oauth_url
-                    }else{
-                        this.$router.replace(localStorage.getItem('beforeLoginUrl'))
+                    //     window.location.href = res.data.oauth_url
+                    // }else{
+                        this.$router.replace(`'${localStorage.getItem('beforeLoginUrl')}'`)
+                        this.$router.go(-1)
                     }
                     Toast(`登陆成功`)
                 }).catch(err => {

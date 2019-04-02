@@ -10,7 +10,7 @@ import url from '@/serviceAPI.config.js'
 import mdFive from '@/md5.js'
 // 获取url里的参数值
 import geturlpara from './geturlpara.js'
-import ScrollPosition from './scroll-position.js'
+// import ScrollPosition from './scroll-position.js'
 
 Vue.component('shadow-box',ShadowBox)
 Vue.component('submit-button-box',SubmitButtonBox)
@@ -22,15 +22,16 @@ Vue.config.productionTip = false
 Vue.prototype.axios = axios;
 Vue.prototype.$md5 = md5;
 Vue.prototype.$geturlpara = geturlpara 
+// Vue.prototype.$ = $ 
 
 
 /* 路由发生变化修改页面title */
 router.beforeEach((to, from, next) => {
-  let from_name = from.path ? from.path : 'name';
   // 保存滚动条位置
-  ScrollPosition.save(from_name);
-  console.log(from_name)
-  console.log(window.pageYOffset)
+  // let from_name = from.path ? from.path : 'name';
+  // ScrollPosition.save(from_name);
+  // console.log(from_name)
+  // console.log(window.pageYOffset)
   // console.log(from_name.window.pageYOffset)
   // console.log(from_name.document.body.scrollTop)
   // console.log(from_name.document.documentElement.scrollTop)
@@ -45,11 +46,9 @@ router.beforeEach((to, from, next) => {
   // 验证所有的页面，是否登录
   if(to.matched.some(m => m.meta.auth)){
     if(!localStorage.getItem('openid')){
-    // if(!localStorage.getItem('openid') && to.path != '/author'){
       // 保存用户进入授权页面之前的页面路径
       localStorage.setItem('beforeLoginUrl',to.name)
-      // next('/author')
-      // return false
+
       //访问服务器，如果没有 openid ，去授权获取 openid
       axios.post(url.getOauthRedirect,{
         access_token:access_token,
@@ -73,17 +72,16 @@ router.beforeEach((to, from, next) => {
           Toast(`获取授权失败,请稍后再试 ${err.data}`)
         })
       })
-    // }else if(to.path != 'login' && to.path != 'personalCenter'){
-    //   next('/login')
     }else{
       // 获取微信用户名头像
       axios.post(url.getClientInfo,{
         access_token:access_token,
         openid:localStorage.getItem('openid')
       }).then(res => {
-        if(res.data.code == '1020009'){
-          next('/login')
-        }else if(res.data.code == '0'){
+        // if(res.data.code == '1020009'){
+        //   next('/login')
+        // }else 
+        if(res.data.code == '0'){
           localStorage.setItem('avatar',res.data.data.wx_headimgurl)
           localStorage.setItem('userName',res.data.data.username)
           localStorage.setItem('userId',res.data.data.id)
@@ -95,6 +93,7 @@ router.beforeEach((to, from, next) => {
   }
   next()
 })
+
 new Vue({
   router,
   render: h => h(App),

@@ -59,9 +59,9 @@ export default {
   },
   data() {
     return {
-      avatar:localStorage.getItem('avatar'),
-      userName:localStorage.getItem('userName'),
-      userId:localStorage.getItem('userId'),
+      avatar:'',
+      userName:'',
+      userId:'',
       phone:'',
       access_token:this.$md5(mdFive.prefix_str + mdFive.access_date + mdFive.api_key)
     }
@@ -69,29 +69,30 @@ export default {
   mounted(){
     // 获取用户个人信息
     this.httpQuest();
-    this.getUserAvatar();
-  },
-  // 更改数据后重新获取用户个人信息
-  activated(){
-    this.getUserAvatar()
-    let isReload = this.$route.query.isReload;
-    if(isReload){
-      this.httpQuest()
-      this.getUserAvatar()
-    }else{
-      return false;
-    }
+    // 从本地获取用户 头像 名称 等信息
+    var this_ = this;
+    var timer = setInterval(function(){
+      this_.getUserAvatar()
+      if(this_.avatar){
+        clearInterval(timer)
+      }
+    }, 10);
   },
   updated(){
   // 微信获取用户 openid -----------------------------------------------------------
     localStorage.setItem('openid',this.$geturlpara.getUrlKey('openid'))
-    // 从本地获取用户 头像 名称 等信息
-    this.getUserAvatar()
   },
   methods: {
+    // 从本地获取用户 头像 名称 等信息
+    getUserAvatar(){
+      this.avatar = localStorage.getItem('avatar');
+      this.userName = localStorage.getItem('userName');
+      this.userId = localStorage.getItem('userId');
+    },
     phoneCall(){
       window.location.href = 'tel://4006701818'
     },
+    // 获取用户个人信息
     httpQuest(){
       this.axios.post(url.getSelfInfo,{
         access_token:this.access_token,
@@ -101,12 +102,14 @@ export default {
         Toast(`获取用户个人信息失败！<br> ${err.data}`)
       })
     },
-    // 从本地获取用户 头像 名称 等信息
-    getUserAvatar(){
-      this.avatar = localStorage.getItem('avatar');
-      this.userName = localStorage.getItem('userName');
-      this.userId = localStorage.getItem('userId');
+  },
+  beforeRouteLeave(to, from, next){
+    if(to.name == 'personalInformation' || to.name == 'haveCarsInfo' || to.name == 'orderInfo'){
+      if(!this.phone){
+        this.$router.replace('/login')
+      }
     }
+    next()
   },
 }
 </script>
