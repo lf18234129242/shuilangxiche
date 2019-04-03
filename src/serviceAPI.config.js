@@ -1,4 +1,4 @@
-const BASEURL = 'http://www.ichevip.com/api.php/'
+const BASEURL = 'http://www.ichevip.com'
 const URL = {
     getSelfInfo : BASEURL + 'Client/getSelfInfo',               //获取用户信息
     BindClientPhone: BASEURL + 'Client/BindClientPhone',        //用户注册、绑定手机
